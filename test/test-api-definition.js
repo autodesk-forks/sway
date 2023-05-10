@@ -24,13 +24,13 @@
  * THE SOFTWARE.
  */
 
-let _ = require('lodash');
-let assert = require('assert');
-let JsonRefs = require('json-refs');
-let supportedHttpMethods = require('swagger-methods');
-let tHelpers = require('./helpers');
+const _ = require('lodash');
+const assert = require('assert');
+const JsonRefs = require('json-refs');
+const supportedHttpMethods = require('swagger-methods');
+const tHelpers = require('./helpers');
 
-let Sway = tHelpers.getSway();
+const Sway = tHelpers.getSway();
 
 function getOperationCount(pathDef) {
   let count = 0;
@@ -45,7 +45,7 @@ function getOperationCount(pathDef) {
 }
 
 function runTests(mode) {
-  let label = mode === 'with-refs' ? 'with' : 'without';
+  const label = mode === 'with-refs' ? 'with' : 'without';
   let apiDefinition;
 
   before((done) => {
@@ -75,7 +75,7 @@ function runTests(mode) {
   describe(`should handle OpenAPI document ${label} relative references`, () => {
     describe('#getOperations', () => {
       it('should return all operations', () => {
-        let operations = apiDefinition.getOperations();
+        const operations = apiDefinition.getOperations();
 
         assert.equal(operations.length, _.reduce(apiDefinition.definitionFullyResolved.paths, (count, path) => {
           count += getOperationCount(path);
@@ -87,7 +87,7 @@ function runTests(mode) {
       });
 
       it('should return return all operations for the given path', () => {
-        let operations = apiDefinition.getOperations('/pet/{petId}');
+        const operations = apiDefinition.getOperations('/pet/{petId}');
 
         assert.ok(apiDefinition.getOperations().length > operations.length);
         assert.equal(operations.length, getOperationCount(apiDefinition.definitionFullyResolved.paths['/pet/{petId}']));
@@ -150,13 +150,13 @@ function runTests(mode) {
 
     describe('#getOperationsByTag', () => {
       it('should return no operation for incorrect tag', () => {
-        let operations = apiDefinition.getOperationsByTag('incorrect tag');
+        const operations = apiDefinition.getOperationsByTag('incorrect tag');
 
         assert.equal(operations.length, 0);
       });
 
       it('should return all operations for the given tag', () => {
-        let operations = apiDefinition.getOperationsByTag('store');
+        const operations = apiDefinition.getOperationsByTag('store');
 
         assert.equal(
           operations.length,
@@ -173,8 +173,8 @@ function runTests(mode) {
           // This test is likely superfluous but while working on Issue 76 this was broken (pre-commit) and so this test
           // is here just to be sure.
           it('match identical', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-            let matches = [
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const matches = [
               '/foo/{0}/baz',
               '/foo/{1}/baz',
             ];
@@ -194,8 +194,8 @@ function runTests(mode) {
         });
 
         it('should handle regex characters in path', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-          let path = '/foo/({bar})';
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const path = '/foo/({bar})';
 
           cOAIDoc.paths[path] = {};
 
@@ -220,13 +220,13 @@ function runTests(mode) {
       describe('http.ClientRequest (or similar)', () => {
         describe('multiple matches', () => {
           it('complete static match', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-            let lesserMatches = [
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const lesserMatches = [
               '/foo/bar/{baz}',
               '/foo/{bar}/baz',
               '/{foo}/bar/baz',
             ];
-            let match = '/foo/bar/baz';
+            const match = '/foo/bar/baz';
 
             _.forEach(lesserMatches.concat(match), (newPath) => {
               cOAIDoc.paths[newPath] = {};
@@ -245,11 +245,11 @@ function runTests(mode) {
 
           // While this scenario should never happen in a valid OpenAPI document, we handle it anyways
           it('match multiple levels deep', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-            let lesserMatches = [
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const lesserMatches = [
               '/foo/{bar}/baz/{qux}',
             ];
-            let match = '/foo/{bar}/baz/qux';
+            const match = '/foo/{bar}/baz/qux';
 
             _.forEach(lesserMatches.concat(match), (newPath) => {
               cOAIDoc.paths[newPath] = {};
@@ -267,12 +267,12 @@ function runTests(mode) {
           });
 
           it('match single level deep', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-            let lesserMatches = [
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const lesserMatches = [
               '/foo/{bar}/baz',
               '/{foo}/bar/baz',
             ];
-            let match = '/foo/bar/{baz}';
+            const match = '/foo/bar/{baz}';
 
             _.forEach(lesserMatches.concat(match), (newPath) => {
               cOAIDoc.paths[newPath] = {};
@@ -291,8 +291,8 @@ function runTests(mode) {
 
           // While this scenario should never happen in a valid OpenAPI document, we handle it anyways
           it('match identical', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-            let matches = [
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const matches = [
               '/foo/{0}/baz',
               '/foo/{1}/baz',
             ];
@@ -314,8 +314,8 @@ function runTests(mode) {
         });
 
         it('should handle regex characters in path', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-          let path = '/foo/({bar})';
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const path = '/foo/({bar})';
 
           cOAIDoc.paths[path] = {};
 
@@ -352,7 +352,7 @@ function runTests(mode) {
 
     describe('#registerFormat', () => {
       it('should throw TypeError for invalid arguments', () => {
-        let scenarios = [
+        const scenarios = [
           [[], 'name is required'],
           [[true], 'name must be a string'],
           [['test'], 'validator is required'],
@@ -371,7 +371,7 @@ function runTests(mode) {
       });
 
       it('should add validator to list of validators', (done) => {
-        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
         cOAIDoc.definitions.Pet.properties.customFormat = {
           format: 'alwaysFails',
@@ -382,7 +382,7 @@ function runTests(mode) {
           definition: cOAIDoc,
         })
           .then((apiDef) => {
-            let req = {
+            const req = {
               body: {
                 customFormat: 'shouldFail',
                 name: 'Test Pet',
@@ -421,7 +421,7 @@ function runTests(mode) {
 
     describe('#registerFormatGenerator', () => {
       it('should throw TypeError for invalid arguments', () => {
-        let scenarios = [
+        const scenarios = [
           [[], 'name is required'],
           [[true], 'name must be a string'],
           [['test'], 'formatGenerator is required'],
@@ -440,7 +440,7 @@ function runTests(mode) {
       });
 
       it('should add validator to list of format generators', (done) => {
-        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
         cOAIDoc.paths['/user/{username}'].get.parameters[0].format = 'sway';
 
@@ -448,7 +448,7 @@ function runTests(mode) {
           definition: cOAIDoc,
         })
           .then((apiDef) => {
-            let param = apiDef.getOperation('/user/{username}', 'get').getParameter('username');
+            const param = apiDef.getOperation('/user/{username}', 'get').getParameter('username');
 
             try {
               param.getSample();
@@ -469,7 +469,7 @@ function runTests(mode) {
 
     describe('#registerValidator', () => {
       it('should throw TypeError for invalid arguments', () => {
-        let scenarios = [
+        const scenarios = [
           [[], 'validator is required'],
           [['wrongType'], 'validator must be a function'],
         ];
@@ -487,10 +487,10 @@ function runTests(mode) {
 
       it('should add validator to list of validators', () => {
         let results = apiDefinition.validate();
-        let expectedErrors = [
+        const expectedErrors = [
           'error',
         ];
-        let expectedWarnings = [
+        const expectedWarnings = [
           'warning',
         ];
 
@@ -515,7 +515,7 @@ function runTests(mode) {
 
     describe('#validate', () => {
       it('should return zero errors/warnings for a valid document', () => {
-        let results = apiDefinition.validate();
+        const results = apiDefinition.validate();
 
         assert.deepEqual(results.errors, []);
         assert.deepEqual(results.warnings, []);
@@ -523,7 +523,7 @@ function runTests(mode) {
 
       describe('should return errors for an invalid document', () => {
         it('does not validate against JSON Schema', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           delete cOAIDoc.paths;
 
@@ -531,7 +531,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -554,7 +554,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 // Validate that all warnings are unused definitions
                 _.forEach(results.warnings, (warning) => {
@@ -575,7 +575,7 @@ function runTests(mode) {
           describe('schema definitions', () => {
             describe('array', () => {
               it('no items', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.definitions.Pet = {
                   type: 'array',
@@ -585,7 +585,7 @@ function runTests(mode) {
               });
 
               it('items object', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.definitions.Pet = {
                   type: 'array',
@@ -598,7 +598,7 @@ function runTests(mode) {
               });
 
               it('items array', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.definitions.Pet = {
                   type: 'array',
@@ -616,7 +616,7 @@ function runTests(mode) {
             describe('object', () => {
               describe('additionalProperties', () => {
                 it('no items', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -629,7 +629,7 @@ function runTests(mode) {
                 });
 
                 it('items object', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -645,7 +645,7 @@ function runTests(mode) {
                 });
 
                 it('items array', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -669,7 +669,7 @@ function runTests(mode) {
 
               describe('properties', () => {
                 it('no items', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -684,7 +684,7 @@ function runTests(mode) {
                 });
 
                 it('items object', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -702,7 +702,7 @@ function runTests(mode) {
                 });
 
                 it('items array', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -724,7 +724,7 @@ function runTests(mode) {
 
               describe('allOf', () => {
                 it('no items', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -739,7 +739,7 @@ function runTests(mode) {
                 });
 
                 it('items object', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -766,7 +766,7 @@ function runTests(mode) {
                 });
 
                 it('items array', (done) => {
-                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.definitions.Pet = {
                     type: 'object',
@@ -797,8 +797,8 @@ function runTests(mode) {
             });
 
             it('recursive', (done) => {
-              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-              let errorSchema = {
+              const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              const errorSchema = {
                 type: 'object',
                 allOf: [
                   {
@@ -829,7 +829,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  let results = apiDef.validate();
+                  const results = apiDef.validate();
 
                   // Validate that all warnings are unused definitions
                   _.forEach(results.warnings, (warning) => {
@@ -891,7 +891,7 @@ function runTests(mode) {
           describe('parameter definitions', () => {
             describe('global', () => {
               it('body parameter', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.parameters = {
                   petInBody: {
@@ -913,7 +913,7 @@ function runTests(mode) {
               });
 
               it('non-body parameter', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.parameters = {
                   petStatus: _.cloneDeep(cOAIDoc.paths['/pet/findByStatus'].get.parameters[0]),
@@ -927,7 +927,7 @@ function runTests(mode) {
 
             describe('path-level', () => {
               it('body parameter', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet'].parameters = [
                   {
@@ -953,7 +953,7 @@ function runTests(mode) {
               });
 
               it('non-body parameter', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet'].parameters = [
                   _.cloneDeep(cOAIDoc.paths['/pet/findByStatus'].get.parameters[0]),
@@ -967,7 +967,7 @@ function runTests(mode) {
 
             describe('operation', () => {
               it('body parameter', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 delete cOAIDoc.paths['/user/createWithArray'].post.parameters[0].schema.items;
 
@@ -979,7 +979,7 @@ function runTests(mode) {
               });
 
               it('non-body parameter', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items;
 
@@ -991,7 +991,7 @@ function runTests(mode) {
           describe('responses', () => {
             describe('global', () => {
               it('headers', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.responses = {
                   success: {
@@ -1008,7 +1008,7 @@ function runTests(mode) {
               });
 
               it('schema definition', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.responses = {
                   success: {
@@ -1025,7 +1025,7 @@ function runTests(mode) {
 
             describe('operation', () => {
               it('headers', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/findByStatus'].get.responses['200'].headers = {
                   'X-Broken-Array': {
@@ -1049,7 +1049,7 @@ function runTests(mode) {
               });
 
               it('schema definition', (done) => {
-                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 delete cOAIDoc.paths['/pet/findByStatus'].get.responses['200'].schema.items;
 
@@ -1073,7 +1073,7 @@ function runTests(mode) {
           }
 
           it('definition (direct)', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.definitions.A = {
               allOf: [
@@ -1094,7 +1094,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
 
@@ -1117,7 +1117,7 @@ function runTests(mode) {
           });
 
           it('definition (indirect)', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.definitions.A = {
               allOf: [
@@ -1145,7 +1145,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 validateErrors(results.errors, [
@@ -1173,7 +1173,7 @@ function runTests(mode) {
           });
 
           it('inline schema', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.definitions.A = {
               allOf: [
@@ -1191,7 +1191,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1207,7 +1207,7 @@ function runTests(mode) {
           });
 
           it('not composition/inheritance', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.definitions.Pet.properties.friends = {
               type: 'array',
@@ -1220,7 +1220,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, []);
@@ -1231,7 +1231,7 @@ function runTests(mode) {
 
         describe('default values fail JSON Schema validation', () => {
           it('schema-like object (non-body parameter)', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.paths['/pet'].post.parameters.push({
               in: 'query',
@@ -1246,7 +1246,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1263,7 +1263,7 @@ function runTests(mode) {
           });
 
           it('schema object', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.definitions.Pet.properties.name.default = 123;
 
@@ -1271,7 +1271,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1289,8 +1289,8 @@ function runTests(mode) {
 
         describe('duplicate operation parameter', () => {
           it('operation-level', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-            let cParam = _.cloneDeep(cOAIDoc.paths['/pet/findByStatus'].get.parameters[0]);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cParam = _.cloneDeep(cOAIDoc.paths['/pet/findByStatus'].get.parameters[0]);
 
             // Alter the parameter so that it is not identical as that will create a JSON Schema uniqueness error
             cParam.description = 'Duplicate';
@@ -1301,7 +1301,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1316,8 +1316,8 @@ function runTests(mode) {
           });
 
           it('path-level', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-            let cParam = _.cloneDeep(cOAIDoc.paths['/pet/{petId}'].parameters[0]);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cParam = _.cloneDeep(cOAIDoc.paths['/pet/{petId}'].parameters[0]);
 
             // Alter the parameter so that it is not identical as that will create a JSON Schema uniqueness error
             cParam.description = 'Duplicate';
@@ -1328,7 +1328,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1344,7 +1344,7 @@ function runTests(mode) {
         });
 
         it('invalid JSON Reference', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/something'] = {
             $ref: 'http://:8080',
@@ -1354,7 +1354,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1369,7 +1369,7 @@ function runTests(mode) {
         });
 
         it('path parameter in pattern is empty', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/invalid/{}'] = {};
 
@@ -1377,7 +1377,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1392,7 +1392,7 @@ function runTests(mode) {
         });
 
         it('missing path parameter declaration', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet/{petId}'].get.parameters = [
             {
@@ -1408,7 +1408,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1423,7 +1423,7 @@ function runTests(mode) {
         });
 
         it('missing path parameter definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet/{petId}'].parameters = [];
 
@@ -1431,7 +1431,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1456,7 +1456,7 @@ function runTests(mode) {
         });
 
         it('multiple equivalent paths', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet/{notPetId}'] = {};
 
@@ -1464,7 +1464,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1479,8 +1479,8 @@ function runTests(mode) {
         });
 
         it('multiple operations with the same operationId', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-          let { operationId } = cOAIDoc.paths['/pet'].post;
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const { operationId } = cOAIDoc.paths['/pet'].post;
 
           cOAIDoc.paths['/pet'].put.operationId = operationId;
 
@@ -1488,7 +1488,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1503,8 +1503,8 @@ function runTests(mode) {
         });
 
         it('operation has multiple body parameters', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-          let dBodyParam = _.cloneDeep(cOAIDoc.paths['/pet'].post.parameters[0]);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const dBodyParam = _.cloneDeep(cOAIDoc.paths['/pet'].post.parameters[0]);
 
           dBodyParam.name += 'Duplicate';
 
@@ -1514,7 +1514,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1529,7 +1529,7 @@ function runTests(mode) {
         });
 
         it('operation can have body or form parameter but not both', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet'].post.parameters.push({
             name: 'name',
@@ -1543,7 +1543,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.validate();
+              const results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1559,7 +1559,7 @@ function runTests(mode) {
 
         describe('missing required property definition', () => {
           it('allOf', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             delete cOAIDoc.definitions.Pet.properties.name;
 
@@ -1577,7 +1577,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1592,7 +1592,7 @@ function runTests(mode) {
           });
 
           it('properties', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             delete cOAIDoc.definitions.Pet.properties.name;
 
@@ -1600,7 +1600,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1617,7 +1617,7 @@ function runTests(mode) {
 
         describe('unused definitions', () => {
           it('definition', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.definitions.Missing = {};
 
@@ -1625,7 +1625,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1640,7 +1640,7 @@ function runTests(mode) {
           });
 
           it('parameter', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.parameters = {
               missing: {
@@ -1654,7 +1654,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1669,7 +1669,7 @@ function runTests(mode) {
           });
 
           it('response', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.responses = {
               Missing: {
@@ -1681,7 +1681,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1696,7 +1696,7 @@ function runTests(mode) {
           });
 
           it('securityDefinition', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.securityDefinitions.missing = {
               type: 'apiKey',
@@ -1708,7 +1708,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1723,7 +1723,7 @@ function runTests(mode) {
           });
 
           it('security scope', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.securityDefinitions.petstore_auth.scopes.missing = 'I am missing';
 
@@ -1731,7 +1731,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.validate();
+                const results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1749,7 +1749,7 @@ function runTests(mode) {
         describe('unresolvable references', () => {
           describe('json reference', () => {
             it('local', (done) => {
-              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet'].post.parameters[0].schema.$ref = '#/definitions/Missing';
 
@@ -1757,7 +1757,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  let results = apiDef.validate();
+                  const results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1773,7 +1773,7 @@ function runTests(mode) {
             });
 
             it('remote', (done) => {
-              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet'].post.parameters[0].schema.$ref = 'fake.json';
 
@@ -1781,13 +1781,11 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  let results = apiDef.validate();
-                  let error;
+                  const results = apiDef.validate();
+                  const { errors: [error] } = results;
 
                   assert.deepEqual(results.warnings, []);
                   assert.equal(results.errors.length, 1);
-
-                  ({ errors: [error] } = results);
 
                   assert.equal(error.code, 'UNRESOLVABLE_REFERENCE');
                   assert.equal(error.message, 'Reference could not be resolved: fake.json');
@@ -1800,7 +1798,7 @@ function runTests(mode) {
 
           describe('security definition', () => {
             it('global', (done) => {
-              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.security.push({
                 missing: [],
@@ -1810,7 +1808,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  let results = apiDef.validate();
+                  const results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1825,7 +1823,7 @@ function runTests(mode) {
             });
 
             it('operation-level', (done) => {
-              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/store/inventory'].get.security.push({
                 missing: [],
@@ -1835,7 +1833,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  let results = apiDef.validate();
+                  const results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1852,7 +1850,7 @@ function runTests(mode) {
 
           describe('security scope definition', () => {
             it('global', (done) => {
-              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.security[0].petstore_auth.push('missing');
 
@@ -1860,7 +1858,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  let results = apiDef.validate();
+                  const results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1875,7 +1873,7 @@ function runTests(mode) {
             });
 
             it('operation-level', (done) => {
-              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/store/inventory'].get.security.push({
                 petstore_auth: [
@@ -1887,7 +1885,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  let results = apiDef.validate();
+                  const results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1905,7 +1903,7 @@ function runTests(mode) {
       });
 
       it('should return errors for JsonRefs errors', (done) => {
-        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
         cOAIDoc.paths['/pet'].post.parameters[0].schema.$ref = '#definitions/Pet';
 
@@ -1928,7 +1926,7 @@ function runTests(mode) {
       });
 
       it('should return warnings for JsonRefs warnings', (done) => {
-        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
         cOAIDoc.paths['/pet'].post.parameters[0].schema.extraField = 'This is an extra field';
 
@@ -1936,7 +1934,7 @@ function runTests(mode) {
           definition: cOAIDoc,
         })
           .then((apiDef) => {
-            let results = apiDef.validate();
+            const results = apiDef.validate();
 
             assert.deepEqual(results, {
               errors: [],
@@ -1954,7 +1952,7 @@ function runTests(mode) {
 
       describe('human readable errors for invalid schema', () => {
         function validateError(apiDef, defType) {
-          let results = apiDef.validate();
+          const results = apiDef.validate();
 
           assert.equal(results.errors.length, 1);
           assert.equal(results.warnings.length, 0);
@@ -1962,7 +1960,7 @@ function runTests(mode) {
         }
 
         it('should handle parameter definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet'].post.parameters[0] = {};
 
@@ -1976,7 +1974,7 @@ function runTests(mode) {
         });
 
         it('should handle global parameter definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.parameters = {
             broken: {},
@@ -1992,7 +1990,7 @@ function runTests(mode) {
         });
 
         it('should handle response definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet'].post.responses.default = {};
 
@@ -2006,7 +2004,7 @@ function runTests(mode) {
         });
 
         it('should handle response schema definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet'].post.responses.default = {
             description: 'A broken response',
@@ -2023,7 +2021,7 @@ function runTests(mode) {
         });
 
         it('should handle schema additionalProperties definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.definitions.Broken = {
             type: 'object',
@@ -2040,7 +2038,7 @@ function runTests(mode) {
         });
 
         it('should handle schema items definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.definitions.Broken = {
             type: 'object',
@@ -2062,7 +2060,7 @@ function runTests(mode) {
         });
 
         it('should handle securityDefinitions definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.securityDefinitions.broken = {};
 
@@ -2076,7 +2074,7 @@ function runTests(mode) {
         });
 
         it('should handle schema items definition', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.definitions.Broken = {
             type: 'object',

@@ -24,13 +24,13 @@
  * THE SOFTWARE.
  */
 
-let _ = require('lodash');
-let assert = require('assert');
-let helpers = require('./helpers');
+const _ = require('lodash');
+const assert = require('assert');
+const helpers = require('./helpers');
 
-let Sway = helpers.getSway();
+const Sway = helpers.getSway();
 
-let invalidCreateScenarios = [
+const invalidCreateScenarios = [
   [[], 'options is required'],
   [['wrongType'], 'options must be an object'],
   [[{}], 'options.definition is required'],
@@ -111,7 +111,7 @@ describe('sway', () => {
     });
 
     it('should handle definition object', (done) => {
-      let options = {
+      const options = {
         definition: helpers.oaiDoc,
       };
 
@@ -121,7 +121,7 @@ describe('sway', () => {
     });
 
     it('should handle definition file location', (done) => {
-      let options = {
+      const options = {
         definition: helpers.oaiDocPath,
       };
 
@@ -131,7 +131,7 @@ describe('sway', () => {
     });
 
     it('should register customValidators', (done) => {
-      let options = {
+      const options = {
         definition: helpers.oaiDoc,
         customValidators: [
           function validator1() {

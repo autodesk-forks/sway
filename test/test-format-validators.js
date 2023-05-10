@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-let _ = require('lodash');
-let assert = require('assert');
-let helpers = require('./helpers');
+const _ = require('lodash');
+const assert = require('assert');
+const helpers = require('./helpers');
 
-let Sway = helpers.getSway();
+const Sway = helpers.getSway();
 
 describe('format validators', () => {
   it('always truthy', (done) => {
-    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
@@ -78,7 +78,7 @@ describe('format validators', () => {
     let goodParamValue;
 
     before((done) => {
-      let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+      const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int32',
@@ -105,7 +105,7 @@ describe('format validators', () => {
     });
 
     it('bad value', () => {
-      let { error } = badParamValue;
+      const { error } = badParamValue;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));
@@ -142,7 +142,7 @@ describe('format validators', () => {
     let goodParamValue;
 
     before((done) => {
-      let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+      const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int64',
@@ -169,7 +169,7 @@ describe('format validators', () => {
     });
 
     it('bad value', () => {
-      let { error } = badParamValue;
+      const { error } = badParamValue;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));

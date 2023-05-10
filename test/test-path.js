@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-let _ = require('lodash');
-let assert = require('assert');
-let JsonRefs = require('json-refs');
-let tHelpers = require('./helpers');
+const _ = require('lodash');
+const assert = require('assert');
+const JsonRefs = require('json-refs');
+const tHelpers = require('./helpers');
 
-let Sway = tHelpers.getSway();
+const Sway = tHelpers.getSway();
 
 function runTests(mode) {
-  let label = mode === 'with-refs' ? 'with' : 'without';
+  const label = mode === 'with-refs' ? 'with' : 'without';
   let apiDefinition;
 
   before((done) => {
@@ -51,8 +51,8 @@ function runTests(mode) {
 
   describe(`should handle OpenAPI document ${label} relative references`, () => {
     it('should have proper structure', () => {
-      let path = '/pet/{petId}';
-      let { pathObject } = apiDefinition.getOperation(path, 'get');
+      const path = '/pet/{petId}';
+      const { pathObject } = apiDefinition.getOperation(path, 'get');
 
       assert.deepEqual(pathObject.apiDefinition, apiDefinition);
       assert.equal(pathObject.path, path);
@@ -92,8 +92,8 @@ function runTests(mode) {
       });
 
       it('should return no operations', (done) => {
-        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-        let path = '/petz';
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const path = '/petz';
 
         cOAIDoc.paths[path] = {};
 
@@ -117,7 +117,7 @@ function runTests(mode) {
 
     describe('#getParameters', () => {
       it('should return the expected parameters', () => {
-        let parameters = apiDefinition.getPath('/pet/{petId}').getParameters();
+        const parameters = apiDefinition.getPath('/pet/{petId}').getParameters();
 
         assert.equal(parameters.length, 1);
       });

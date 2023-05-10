@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-let _ = require('lodash');
-let assert = require('assert');
-let YAML = require('js-yaml');
-let tHelpers = require('./helpers');
-let sHelpers = require('../lib/helpers');
+const _ = require('lodash');
+const assert = require('assert');
+const YAML = require('js-yaml');
+const tHelpers = require('./helpers');
+const sHelpers = require('../lib/helpers');
 
-let Sway = tHelpers.getSway();
+const Sway = tHelpers.getSway();
 
 function runTests(mode) {
-  let label = mode === 'with-refs' ? 'with' : 'without';
+  const label = mode === 'with-refs' ? 'with' : 'without';
   let apiDefinition;
 
   before((done) => {
@@ -52,11 +52,11 @@ function runTests(mode) {
 
   describe(`should handle OpenAPI document ${label} relative references`, () => {
     describe('#getExample', () => {
-      let example = {
+      const example = {
         name: 'Sparky',
         photoUrls: [],
       };
-      let exampleXML = [
+      const exampleXML = [
         '<pet>',
         '  <name>Sparky></name>',
         '  <photoUrls></photoUrls>',
@@ -65,8 +65,8 @@ function runTests(mode) {
       let operation;
 
       before((done) => {
-        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-        let examples = {
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const examples = {
           'application/json': example,
           'application/x-yaml': example,
           'application/xml': exampleXML,
@@ -116,7 +116,7 @@ function runTests(mode) {
       });
 
       it('should return sample for the requested response code', () => {
-        let operation = apiDefinition.getOperation('/pet/{petId}', 'get');
+        const operation = apiDefinition.getOperation('/pet/{petId}', 'get');
 
         try {
           sHelpers.validateAgainstSchema(
@@ -134,8 +134,8 @@ function runTests(mode) {
       });
 
       it('should handle parameter with file type (Issue 159)', (done) => {
-        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-        let cPath = '/pet/{petId}/uploadImage';
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const cPath = '/pet/{petId}/uploadImage';
 
         cOAIDoc.paths[cPath].post.responses['200'].schema = {
           type: 'file',
@@ -152,7 +152,7 @@ function runTests(mode) {
     });
 
     describe('#validateResponse', () => {
-      let validPet = {
+      const validPet = {
         name: 'Test Pet',
         photoUrls: [],
       };
@@ -162,7 +162,7 @@ function runTests(mode) {
           let cSway;
 
           before((done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             // Schemas are added so they don't get recognized as void responses
             cOAIDoc.paths['/pet/{petId}'].delete.responses['204'] = {
@@ -189,7 +189,7 @@ function runTests(mode) {
 
           describe('unsupported value', () => {
             it('should return an error for a provided value', () => {
-              let results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
+              const results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
                 body: validPet,
                 headers: {
                   'content-type': 'application/x-yaml',
@@ -209,7 +209,7 @@ function runTests(mode) {
             });
 
             it('should not return an error for a void response', () => {
-              let results = apiDefinition.getOperation('/user', 'post').validateResponse({
+              const results = apiDefinition.getOperation('/user', 'post').validateResponse({
                 headers: {
                   'content-type': 'application/x-yaml',
                 },
@@ -220,7 +220,7 @@ function runTests(mode) {
             });
 
             it('should not return an error for a 204 response', () => {
-              let results = cSway.getOperation('/pet/{petId}', 'delete').validateResponse({
+              const results = cSway.getOperation('/pet/{petId}', 'delete').validateResponse({
                 body: validPet,
                 headers: {
                   'content-type': 'application/x-yaml',
@@ -233,7 +233,7 @@ function runTests(mode) {
             });
 
             it('should not return an error for a 304 response', () => {
-              let results = cSway.getOperation('/pet/{petId}', 'get').validateResponse({
+              const results = cSway.getOperation('/pet/{petId}', 'get').validateResponse({
                 body: validPet,
                 headers: {
                   'content-type': 'application/x-yaml',
@@ -247,7 +247,7 @@ function runTests(mode) {
           });
 
           it('should not return an error for a supported value', () => {
-            let results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
+            const results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
               body: validPet,
               headers: {
                 'content-type': 'application/json',
@@ -261,7 +261,7 @@ function runTests(mode) {
 
           describe('undefined value', () => {
             it('should return an error when not a void/204/304 response', () => {
-              let results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
+              const results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
                 body: validPet,
                 statusCode: 200,
               });
@@ -278,14 +278,14 @@ function runTests(mode) {
             });
 
             it('should not return an error for a void response', () => {
-              let results = cSway.getOperation('/user', 'post').validateResponse({});
+              const results = cSway.getOperation('/user', 'post').validateResponse({});
 
               assert.equal(results.errors.length, 0);
               assert.equal(results.warnings.length, 0);
             });
 
             it('should not return an error for a 204 response', () => {
-              let results = cSway.getOperation('/pet/{petId}', 'delete').validateResponse({
+              const results = cSway.getOperation('/pet/{petId}', 'delete').validateResponse({
                 body: validPet,
                 statusCode: 204,
               });
@@ -295,7 +295,7 @@ function runTests(mode) {
             });
 
             it('should not return an error for a 304 response', () => {
-              let results = cSway.getOperation('/pet/{petId}', 'get').validateResponse({
+              const results = cSway.getOperation('/pet/{petId}', 'get').validateResponse({
                 body: validPet,
                 statusCode: 304,
               });
@@ -306,7 +306,7 @@ function runTests(mode) {
           });
 
           it('should not return an INVALID_CONENT_TYPE error for empty body (Issue 164)', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.paths['/user'].post.produces = ['application/xml'];
             cOAIDoc.paths['/user'].post.responses.default.schema = {
@@ -317,7 +317,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results = apiDef.getOperation('/user', 'post').validateResponse({
+                const results = apiDef.getOperation('/user', 'post').validateResponse({
                   headers: {
                     'Content-Type': 'application/json',
                   },
@@ -347,7 +347,7 @@ function runTests(mode) {
         // We only need one test to make sure that we're using the global produces
 
         it('should handle global level produces', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.produces = [
             'application/json',
@@ -360,7 +360,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.getOperation('/pet/{petId}', 'get').validateResponse({
+              const results = apiDef.getOperation('/pet/{petId}', 'get').validateResponse({
                 body: validPet,
                 headers: {
                   'content-type': 'application/x-yaml',
@@ -382,8 +382,8 @@ function runTests(mode) {
         });
 
         it('should handle mime-type parameters (exact match)', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-          let mimeType = 'application/x-yaml; charset=utf-8';
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const mimeType = 'application/x-yaml; charset=utf-8';
 
           cOAIDoc.paths['/pet/{petId}'].get.produces.push(mimeType);
 
@@ -391,7 +391,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.getOperation('/pet/{petId}', 'get').validateResponse({
+              const results = apiDef.getOperation('/pet/{petId}', 'get').validateResponse({
                 body: validPet,
                 headers: {
                   'content-type': mimeType,
@@ -408,7 +408,7 @@ function runTests(mode) {
 
       describe('validate headers', () => {
         it('should return errors for invalid headers (schema)', (done) => {
-          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/user/login'].get.responses['200'].headers['X-Rate-Limit'].maximum = 5;
 
@@ -416,7 +416,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              let results = apiDef.getOperation('/user/login', 'get').validateResponse({
+              const results = apiDef.getOperation('/user/login', 'get').validateResponse({
                 body: 'OK',
                 headers: {
                   'content-type': 'application/json',
@@ -448,7 +448,7 @@ function runTests(mode) {
         });
 
         it('should return errors for invalid headers (type)', () => {
-          let results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
+          const results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
             body: 'OK',
             headers: {
               'content-type': 'application/json',
@@ -490,7 +490,7 @@ function runTests(mode) {
         });
 
         it('should not return errors for valid headers', () => {
-          let results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
+          const results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
             body: 'OK',
             headers: {
               'content-type': 'application/json',
@@ -508,7 +508,7 @@ function runTests(mode) {
       describe('validate body', () => {
         describe('should not return an error for a valid response body', () => {
           it('empty body for void response', () => {
-            let results = apiDefinition.getOperation('/pet', 'post').validateResponse({
+            const results = apiDefinition.getOperation('/pet', 'post').validateResponse({
               statusCode: 405,
             });
 
@@ -517,7 +517,7 @@ function runTests(mode) {
           });
 
           it('non-empty body for void response', () => {
-            let results = apiDefinition.getOperation('/pet', 'post').validateResponse({
+            const results = apiDefinition.getOperation('/pet', 'post').validateResponse({
               body: 'Bad Request',
               statusCode: 405,
             });
@@ -527,7 +527,7 @@ function runTests(mode) {
           });
 
           it('primitive body', () => {
-            let results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
+            const results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
               body: 'OK',
               headers: {
                 'content-type': 'application/json',
@@ -542,7 +542,7 @@ function runTests(mode) {
           });
 
           it('complex body', () => {
-            let results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
+            const results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
               body: {
                 name: 'First Pet',
                 photoUrls: [],
@@ -558,17 +558,8 @@ function runTests(mode) {
           });
 
           it('Buffer body', () => {
-            let results;
-            let value;
-
-            // Browsers do not have a 'Buffer' type so we basically skip this test
-            if (typeof window === 'undefined') {
-              value = Buffer.from('OK');
-            } else {
-              value = 'OK';
-            }
-
-            results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
+            const value = typeof window === 'undefined' ? Buffer.from('OK') : 'OK';
+            const results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
               body: value,
               headers: {
                 'content-type': 'application/json',
@@ -583,7 +574,7 @@ function runTests(mode) {
 
         describe('should return an error for an invalid response body', () => {
           it('primitive body', () => {
-            let results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
+            const results = apiDefinition.getOperation('/user/login', 'get').validateResponse({
               body: {},
               headers: {
                 'content-type': 'application/json',
@@ -611,7 +602,7 @@ function runTests(mode) {
           });
 
           it('complex body', () => {
-            let results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
+            const results = apiDefinition.getOperation('/pet/{petId}', 'get').validateResponse({
               body: {},
               headers: {
                 'content-type': 'application/json',
@@ -644,7 +635,7 @@ function runTests(mode) {
           });
 
           it('Buffer body', (done) => {
-            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.paths['/user/login'].get.responses['200'].schema.minLength = 3;
 
@@ -652,17 +643,9 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                let results;
-                let value;
-
                 // Browsers do not have a 'Buffer' type so we basically skip this test
-                if (typeof window === 'undefined') {
-                  value = Buffer.from('OK');
-                } else {
-                  value = 'OK';
-                }
-
-                results = apiDef.getOperation('/user/login', 'get').validateResponse({
+                const value = typeof window === 'undefined' ? Buffer.from('OK') : 'OK';
+                const results = apiDef.getOperation('/user/login', 'get').validateResponse({
                   body: value,
                   encoding: 'utf-8',
                   headers: {

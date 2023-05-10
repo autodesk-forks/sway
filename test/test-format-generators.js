@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-let _ = require('lodash');
-let assert = require('assert');
-let helpers = require('./helpers');
+const _ = require('lodash');
+const assert = require('assert');
+const helpers = require('./helpers');
 
-let Sway = helpers.getSway();
+const Sway = helpers.getSway();
 
 describe('format generators', () => {
   it('byte', (done) => {
-    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
@@ -51,7 +51,7 @@ describe('format generators', () => {
   });
 
   it('password', (done) => {
-    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
