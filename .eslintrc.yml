@@ -35,5 +35,4 @@ rules:
   no-var: off
   vars-on-top: off
   global-require: off
-  no-unreachable: off
   # END

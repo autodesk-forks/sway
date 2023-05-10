@@ -53,7 +53,7 @@ function dist(done) {
   });
 }
 
-function docs(done) {
+function docs() {
   return jsdoc2md.render({
     files: [
       './index.js',
@@ -63,7 +63,6 @@ function docs(done) {
   }).then((output) => {
     fs.writeFileSync('docs/API.md', output);
   });
-  done();
 }
 
 function docsTypescriptRaw(done) {
