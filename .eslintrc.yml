@@ -26,5 +26,4 @@ rules:
   no-use-before-define: off
   prefer-spread: off
   prefer-const: off
-  no-buffer-constructor: off
   # END

@@ -563,7 +563,7 @@ function runTests(mode) {
 
             // Browsers do not have a 'Buffer' type so we basically skip this test
             if (typeof window === 'undefined') {
-              value = new Buffer('OK');
+              value = Buffer.from('OK');
             } else {
               value = 'OK';
             }
@@ -657,7 +657,7 @@ function runTests(mode) {
 
                 // Browsers do not have a 'Buffer' type so we basically skip this test
                 if (typeof window === 'undefined') {
-                  value = new Buffer('OK');
+                  value = Buffer.from('OK');
                 } else {
                   value = 'OK';
                 }

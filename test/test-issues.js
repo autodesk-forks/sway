@@ -254,7 +254,7 @@ describe('issues', () => {
 
         // Browsers do not have a 'Buffer' type so we basically skip this test
         if (typeof window === 'undefined') {
-          value = new Buffer(rawValue);
+          value = Buffer.from(rawValue);
         } else {
           value = rawValue;
         }
