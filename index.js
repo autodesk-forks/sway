@@ -27,12 +27,7 @@ var helpers = require('./lib/helpers');
 var JsonRefs = require('json-refs');
 var ApiDefinition = require('./lib/types/api-definition');
 var YAML = require('js-yaml');
-
-// Load promises polyfill if necessary
-/* istanbul ignore if */
-if (typeof Promise === 'undefined') {
-  require('native-promise-only');
-}
+require('native-promise-only'); // Load promises polyfill if necessary
 
 /**
  * A library that simplifies [OpenAPI](https://www.openapis.org/) integrations.

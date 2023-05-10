@@ -33,11 +33,7 @@ const jsdoc2md = require('jsdoc-to-markdown');
 const fs = require('fs');
 // eslint-disable-next-line import/no-unresolved
 const gulpESLintNew = require('gulp-eslint-new');
-
-// Load promises polyfill if necessary
-if (typeof Promise === 'undefined') {
-  require('native-promise-only');
-}
+require('native-promise-only'); // Load promises polyfill if necessary
 
 function clean() {
   return del([

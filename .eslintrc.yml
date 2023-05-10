@@ -34,5 +34,4 @@ rules:
   no-mixed-operators: off
   no-var: off
   vars-on-top: off
-  global-require: off
   # END
