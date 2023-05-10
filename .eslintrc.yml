@@ -23,5 +23,4 @@ rules:
   func-names: off
   no-underscore-dangle: off
   no-loop-func: off
-  no-use-before-define: off
   # END
