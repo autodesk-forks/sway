@@ -27,5 +27,4 @@ rules:
   prefer-spread: off
   prefer-const: off
   no-buffer-constructor: off
-  import/order: off
   # END

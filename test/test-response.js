@@ -26,11 +26,11 @@
 
 let _ = require('lodash');
 let assert = require('assert');
+let YAML = require('js-yaml');
 let tHelpers = require('./helpers');
 let sHelpers = require('../lib/helpers');
 
 let Sway = tHelpers.getSway();
-let YAML = require('js-yaml');
 
 function runTests(mode) {
   let label = mode === 'with-refs' ? 'with' : 'without';

@@ -26,8 +26,8 @@
 
 let _ = require('lodash');
 let assert = require('assert');
-let tHelpers = require('./helpers');
 let JsonRefs = require('json-refs');
+let tHelpers = require('./helpers');
 
 let Sway = tHelpers.getSway();
 

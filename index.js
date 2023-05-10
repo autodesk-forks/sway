@@ -23,10 +23,10 @@
  */
 
 let _ = require('lodash');
-let helpers = require('./lib/helpers');
 let JsonRefs = require('json-refs');
-let ApiDefinition = require('./lib/types/api-definition');
 let YAML = require('js-yaml');
+let helpers = require('./lib/helpers');
+let ApiDefinition = require('./lib/types/api-definition');
 require('native-promise-only'); // Load promises polyfill if necessary
 
 /**

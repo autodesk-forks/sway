@@ -27,13 +27,13 @@ const del = require('del');
 const gulp = require('gulp');
 const gutil = require('gulp-util');
 const webpack = require('webpack');
-const webpackConfig = require('./webpack.config');
 const run = require('gulp-run-command').default;
 const jsdoc2md = require('jsdoc-to-markdown');
 const fs = require('fs');
 // eslint-disable-next-line import/no-unresolved
 const gulpESLintNew = require('gulp-eslint-new');
 require('native-promise-only'); // Load promises polyfill if necessary
+const webpackConfig = require('./webpack.config');
 
 function clean() {
   return del([

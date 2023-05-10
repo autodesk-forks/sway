@@ -26,10 +26,10 @@
 
 let assert = require('assert');
 let fs = require('fs');
-let helpers = require('../lib/helpers');
 let path = require('path');
-let Sway = require('..');
 let YAML = require('js-yaml');
+let helpers = require('../lib/helpers');
+let Sway = require('..');
 
 let documentBase = path.join(__dirname, 'browser', 'documents');
 let relativeBase = typeof window === 'undefined' ? documentBase : 'base/browser/documents';
