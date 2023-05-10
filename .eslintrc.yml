@@ -31,5 +31,4 @@ rules:
   no-shadow: off
   no-unused-expressions: off
   prefer-destructuring: off
-  no-mixed-operators: off
   # END
