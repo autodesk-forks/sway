@@ -24,49 +24,48 @@
  * THE SOFTWARE.
  */
 
-'use strict';
-
 var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('./helpers');
+
 var Sway = helpers.getSway();
 
-describe('format generators', function () {
-  it('byte', function (done) {
+describe('format generators', () => {
+  it('byte', (done) => {
     var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
-        in: 'query',
+      in: 'query',
       type: 'string',
-      format: 'byte'
+      format: 'byte',
     });
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-    .then(function (apiDef) {
-      assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
-    })
-    .then(done, done);
+      .then((apiDef) => {
+        assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
+      })
+      .then(done, done);
   });
 
-  it('password', function (done) {
+  it('password', (done) => {
     var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
-        in: 'query',
+      in: 'query',
       type: 'string',
-      format: 'password'
+      format: 'password',
     });
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-    .then(function (apiDef) {
-      assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
-    })
-    .then(done, done);
+      .then((apiDef) => {
+        assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
+      })
+      .then(done, done);
   });
 });

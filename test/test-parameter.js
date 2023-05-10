@@ -24,20 +24,19 @@
  * THE SOFTWARE.
  */
 
-'use strict';
-
 var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('../lib/helpers'); // Helpers from Sway
-var tHelpers = require('./helpers'); // Helpers for this suite of tests
+var tHelpers = require('./helpers');
+// Helpers for this suite of tests
 var Sway = tHelpers.getSway();
 
-function runTests (mode) {
+function runTests(mode) {
   var label = mode === 'with-refs' ? 'with' : 'without';
   var apiDefinition;
 
-  before(function (done) {
-    function callback (apiDef) {
+  before((done) => {
+    function callback(apiDef) {
       apiDefinition = apiDef;
 
       done();
@@ -50,12 +49,12 @@ function runTests (mode) {
     }
   });
 
-  describe('should handle OpenAPI document ' + label + ' relative references', function () {
-    it('should have proper structure', function () {
+  describe(`should handle OpenAPI document ${label} relative references`, () => {
+    it('should have proper structure', () => {
       var path = '/pet/{petId}';
       var pathDef = apiDefinition.definitionFullyResolved.paths[path];
 
-      _.each(apiDefinition.getOperation(path, 'post').getParameters(), function (parameter, index) {
+      _.each(apiDefinition.getOperation(path, 'post').getParameters(), (parameter, index) => {
         var ptr = '#/paths/~1pet~1{petId}/';
         var def;
 
@@ -64,7 +63,7 @@ function runTests (mode) {
           ptr += 'parameters/0';
         } else {
           def = pathDef.post.parameters[index - 1];
-          ptr += 'post/parameters/' + (index - 1);
+          ptr += `post/parameters/${index - 1}`;
         }
 
         assert.equal(parameter.ptr, ptr);
@@ -72,8 +71,8 @@ function runTests (mode) {
       });
     });
 
-    describe('#getSchema', function () {
-      it('should handle parameter with explicit schema definition (body parameter)', function () {
+    describe('#getSchema', () => {
+      it('should handle parameter with explicit schema definition (body parameter)', () => {
         var schema = apiDefinition.getOperation('/pet', 'post').getParameter('body').schema;
 
         // Make sure the generated JSON Schema is identical to its referenced schema
@@ -89,13 +88,13 @@ function runTests (mode) {
             {
               code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
               message: 'Missing required property: photoUrls',
-              path: []
+              path: [],
             },
             {
               code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
               message: 'Missing required property: name',
-              path: []
-            }
+              path: [],
+            },
           ]);
           assert.deepEqual(err.warnings, []);
         }
@@ -104,14 +103,14 @@ function runTests (mode) {
         try {
           helpers.validateAgainstSchema(tHelpers.oaiDocValidator, schema, {
             photoUrls: [],
-            name: 'Test Pet'
+            name: 'Test Pet',
           });
         } catch (err) {
           tHelpers.shouldNotHadFailed(err);
         }
       });
 
-      it('should handle parameter with schema-like definition (non-body parameter)', function () {
+      it('should handle parameter with schema-like definition (non-body parameter)', () => {
         var schema = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').schema;
 
         // Make sure the generated JSON Schema is as expected
@@ -119,8 +118,8 @@ function runTests (mode) {
           description: 'Tags to filter by',
           type: 'array',
           items: {
-            type: 'string'
-          }
+            type: 'string',
+          },
         });
 
         // Make sure the generated JSON Schema validates an invalid object properly
@@ -134,8 +133,8 @@ function runTests (mode) {
               code: 'INVALID_TYPE',
               description: 'Tags to filter by',
               message: 'Expected type array but found type integer',
-              path: []
-            }
+              path: [],
+            },
           ]);
           assert.deepEqual([], err.warnings);
         }
@@ -145,7 +144,7 @@ function runTests (mode) {
           helpers.validateAgainstSchema(tHelpers.oaiDocValidator, schema, [
             'tag1',
             'tag2',
-            'tag3'
+            'tag3',
           ]);
         } catch (err) {
           tHelpers.shouldNotHadFailed(err);
@@ -153,67 +152,73 @@ function runTests (mode) {
       });
     });
 
-    describe('#getSample', function () {
-      it('should handle parameter with explicit schema definition (body parameter)', function () {
+    describe('#getSample', () => {
+      it('should handle parameter with explicit schema definition (body parameter)', () => {
         var parameter = apiDefinition.getOperation('/pet', 'post').getParameter('body');
 
         try {
-          helpers.validateAgainstSchema(tHelpers.oaiDocValidator,
-                                        parameter.schema,
-                                        parameter.getSample());
+          helpers.validateAgainstSchema(
+            tHelpers.oaiDocValidator,
+            parameter.schema,
+            parameter.getSample(),
+          );
         } catch (err) {
           tHelpers.shouldNotHadFailed(err);
         }
       });
 
-      it('should handle parameter with schema-like definition (non-body parameter)', function () {
+      it('should handle parameter with schema-like definition (non-body parameter)', () => {
         var parameter = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags');
 
         try {
-          helpers.validateAgainstSchema(tHelpers.oaiDocValidator,
-                                        parameter.schema,
-                                        parameter.getSample());
+          helpers.validateAgainstSchema(
+            tHelpers.oaiDocValidator,
+            parameter.schema,
+            parameter.getSample(),
+          );
         } catch (err) {
           tHelpers.shouldNotHadFailed(err);
         }
       });
 
-      it('should handle parameter with date format (Issue 99)', function (done) {
+      it('should handle parameter with date format (Issue 99)', (done) => {
         var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
         cOAIDoc.paths['/pet'].post.parameters.push({
-            in: 'query',
+          in: 'query',
           name: 'availableDate',
           description: 'The date the Pet is available',
           required: true,
           type: 'string',
-          format: 'date'
+          format: 'date',
         });
 
         Sway.create({
-          definition: cOAIDoc
+          definition: cOAIDoc,
         })
-          .then(function (apiDef) {
+          .then((apiDef) => {
             assert.ok(_.isString(apiDef.getOperation('/pet', 'post').getParameter('availableDate').getSample()));
           })
           .then(done, done);
       });
 
-      it('should handle parameter with file type (Issue 159)', function () {
-        assert.ok(_.isString(apiDefinition.getOperation('/pet/{petId}/uploadImage',
-                                                     'post').getParameter('file').getSample()));
+      it('should handle parameter with file type (Issue 159)', () => {
+        assert.ok(_.isString(apiDefinition.getOperation(
+          '/pet/{petId}/uploadImage',
+          'post',
+        ).getParameter('file').getSample()));
       });
     });
 
-    describe('#getValue', function () {
-      it('should throw TypeError for invalid arguments', function () {
+    describe('#getValue', () => {
+      it('should throw TypeError for invalid arguments', () => {
         var scenarios = [
           [[], 'req is required'],
-          [[true], 'req must be an object']
+          [[true], 'req must be an object'],
         ];
         var param = apiDefinition.getOperation('/pet', 'post').getParameter('body');
 
-        _.forEach(scenarios, function (scenario) {
+        _.forEach(scenarios, (scenario) => {
           try {
             param.getValue.apply(param, scenario[0]);
 
@@ -224,37 +229,37 @@ function runTests (mode) {
         });
       });
 
-      describe('raw values', function () {
-        describe('body', function () {
+      describe('raw values', () => {
+        describe('body', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet', 'post').getParameter('body');
           });
 
-          it('missing value', function () {
+          it('missing value', () => {
             assert.ok(_.isUndefined(parameter.getValue({}).raw));
           });
 
-          it('provided value', function () {
+          it('provided value', () => {
             var provided = {
-              name: 'Testing'
+              name: 'Testing',
             };
 
             assert.deepEqual(parameter.getValue({
-              body: provided
+              body: provided,
             }).raw, provided);
           });
         });
 
-        describe('formData (file) - required', function () {
+        describe('formData (file) - required', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file');
           });
 
-          it('missing req.files', function () {
+          it('missing req.files', () => {
             try {
               parameter.getValue({});
 
@@ -264,29 +269,29 @@ function runTests (mode) {
             }
           });
 
-          it('missing value', function () {
+          it('missing value', () => {
             assert.ok(_.isUndefined(parameter.getValue({
-              files: {}
+              files: {},
             }).raw));
           });
 
-          it('provided value', function () {
+          it('provided value', () => {
             assert.deepEqual(parameter.getValue({
               files: {
-                file: 'fake file'
-              }
+                file: 'fake file',
+              },
             }).raw, 'fake file');
           });
         });
 
-        describe('formData (file) - optional', function () {
+        describe('formData (file) - optional', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('optionalFile');
           });
 
-          it('missing req.files', function () {
+          it('missing req.files', () => {
             try {
               parameter.getValue({});
             } catch (err) {
@@ -295,14 +300,14 @@ function runTests (mode) {
           });
         });
 
-        describe('formData (not file) - required', function () {
+        describe('formData (not file) - required', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('name');
           });
 
-          it('missing req.body', function () {
+          it('missing req.body', () => {
             try {
               parameter.getValue({});
 
@@ -312,46 +317,46 @@ function runTests (mode) {
             }
           });
 
-          it('missing value', function () {
+          it('missing value', () => {
             assert.ok(_.isUndefined(parameter.getValue({
-              body: {}
+              body: {},
             }).raw));
           });
 
-          it('provided value', function () {
+          it('provided value', () => {
             assert.deepEqual(parameter.getValue({
               body: {
                 name: 'Testing',
-                status: 'available'
-              }
+                status: 'available',
+              },
             }).raw, 'Testing');
           });
         });
 
-        describe('formData (not file) - optional', function () {
+        describe('formData (not file) - optional', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('status');
           });
 
-          it('missing req.body', function () {
+          it('missing req.body', () => {
             try {
               parameter.getValue({});
             } catch (err) {
-              tHelpers.shouldNotHadFailed
+              tHelpers.shouldNotHadFailed;
             }
           });
         });
 
-        describe('header - required', function () {
+        describe('header - required', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'delete').getParameter('api_key');
           });
 
-          it('missing req.headers', function () {
+          it('missing req.headers', () => {
             try {
               parameter.getValue({});
 
@@ -361,28 +366,28 @@ function runTests (mode) {
             }
           });
 
-          it('missing value', function () {
+          it('missing value', () => {
             assert.ok(_.isUndefined(parameter.getValue({
-              headers: {}
+              headers: {},
             }).raw));
           });
 
-          it('provided value (lower case)', function () {
+          it('provided value (lower case)', () => {
             assert.deepEqual(parameter.getValue({
               headers: {
-                'api_key': 'application/json'
-              }
+                api_key: 'application/json',
+              },
             }).raw, 'application/json');
           });
 
-          it('provided value (mixed case)', function () {
+          it('provided value (mixed case)', () => {
             // Change the parameter name to be mixed case
             parameter.name = 'Api_Key';
 
             assert.deepEqual(parameter.getValue({
               headers: {
-                'api_key': 'application/json'
-              }
+                api_key: 'application/json',
+              },
             }).raw, 'application/json');
 
             // Change it back
@@ -390,30 +395,30 @@ function runTests (mode) {
           });
         });
 
-        describe('header - optional', function () {
+        describe('header - optional', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'delete').getParameter('optional_header');
           });
 
-          it('missing req.headers', function () {
+          it('missing req.headers', () => {
             try {
               parameter.getValue({});
             } catch (err) {
-              tHelpers.shouldNotHadFailed
+              tHelpers.shouldNotHadFailed;
             }
           });
         });
 
-        describe('path', function () {
+        describe('path', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('petId');
           });
 
-          it('missing req.url', function () {
+          it('missing req.url', () => {
             try {
               parameter.getValue({});
 
@@ -423,98 +428,98 @@ function runTests (mode) {
             }
           });
 
-          it('missing value', function () {
+          it('missing value', () => {
             assert.ok(_.isUndefined(parameter.getValue({
-              url: '/v2/pet'
+              url: '/v2/pet',
             }).raw));
           });
 
-          it('provided value (single)', function () {
+          it('provided value (single)', () => {
             assert.deepEqual(parameter.getValue({
-              url: '/v2/pet/1'
+              url: '/v2/pet/1',
             }).raw, '1');
           });
 
-          it('provided value (req.originalUrl)', function () {
+          it('provided value (req.originalUrl)', () => {
             assert.deepEqual(parameter.getValue({
-              originalUrl: '/v2/pet/1'
+              originalUrl: '/v2/pet/1',
             }).raw, '1');
           });
 
-          it('provided value (multiple)', function (done) {
+          it('provided value (multiple)', (done) => {
             var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.paths['/pet/{petId}/family/{memberId}'] = {
               parameters: [
                 {
                   name: 'petId',
-                    in: 'path',
+                  in: 'path',
                   description: 'ID of pet to return',
                   required: true,
                   type: 'integer',
-                  format: 'int64'
+                  format: 'int64',
                 },
                 {
                   name: 'memberId',
-                    in: 'path',
+                  in: 'path',
                   description: 'ID of pet\' family member to return',
                   required: true,
                   type: 'integer',
-                  format: 'int64'
-                }
+                  format: 'int64',
+                },
               ],
               get: {
-                responses: cOAIDoc.paths['/pet/{petId}'].get.responses
-              }
+                responses: cOAIDoc.paths['/pet/{petId}'].get.responses,
+              },
             };
 
             Sway.create({
-              definition: cOAIDoc
+              definition: cOAIDoc,
             })
-              .then(function (apiDef) {
-                _.each(apiDef.getOperation('/pet/{petId}/family/{memberId}', 'get').getParameters(), function (param) {
+              .then((apiDef) => {
+                _.each(apiDef.getOperation('/pet/{petId}/family/{memberId}', 'get').getParameters(), (param) => {
                   var expected;
 
                   switch (param.name) {
-                  case 'petId':
-                    expected = 1;
-                    break;
-                  case 'memberId':
-                    expected = 3;
-                    break;
-                  default:
-                    throw new Error('Should not happen');
+                    case 'petId':
+                      expected = 1;
+                      break;
+                    case 'memberId':
+                      expected = 3;
+                      break;
+                    default:
+                      throw new Error('Should not happen');
                   }
 
                   assert.equal(param.getValue({
-                    url: '/v2/pet/1/family/3'
+                    url: '/v2/pet/1/family/3',
                   }).raw, expected);
                 });
               })
               .then(done, done);
           });
 
-          it('provided value (encoded)', function () {
+          it('provided value (encoded)', () => {
             assert.deepEqual(parameter.getValue({
-              url: '/v2/pet/abc%3AHZ'
+              url: '/v2/pet/abc%3AHZ',
             }).raw, 'abc:HZ');
           });
 
-          it('provided value with slash (encoded)', function () {
+          it('provided value with slash (encoded)', () => {
             assert.deepEqual(parameter.getValue({
-              url: '/v2/pet/abc%2FHZ'
+              url: '/v2/pet/abc%2FHZ',
             }).raw, 'abc/HZ');
           });
         });
 
-        describe('query', function () {
+        describe('query', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status');
           });
 
-          it('missing req.query', function () {
+          it('missing req.query', () => {
             try {
               parameter.getValue({});
 
@@ -524,32 +529,32 @@ function runTests (mode) {
             }
           });
 
-          it('missing value', function () {
+          it('missing value', () => {
             assert.ok(_.isUndefined(parameter.getValue({
-              query: {}
+              query: {},
             }).raw));
           });
 
-          it('provided value', function () {
+          it('provided value', () => {
             var statuses = ['available', 'pending'];
 
             assert.deepEqual(parameter.getValue({
               query: {
-                status: statuses
-              }
+                status: statuses,
+              },
             }).raw, statuses);
           });
         });
 
-        it('invalid \'in\' value', function (done) {
+        it('invalid \'in\' value', (done) => {
           var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet/{petId}'].parameters[0].in = 'invalid';
 
           Sway.create({
-            definition: cOAIDoc
+            definition: cOAIDoc,
           })
-            .then(function (apiDef) {
+            .then((apiDef) => {
               try {
                 apiDef.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({});
 
@@ -561,7 +566,7 @@ function runTests (mode) {
             .then(done, done);
         });
 
-        it('missing request', function () {
+        it('missing request', () => {
           try {
             apiDefinition.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue();
 
@@ -572,193 +577,193 @@ function runTests (mode) {
         });
       });
 
-      describe('processed values', function () {
-        describe('getter', function () {
+      describe('processed values', () => {
+        describe('getter', () => {
           var parameter;
 
-          before(function () {
+          before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'get').getParameter('petId');
           });
 
-          it('never processed', function () {
+          it('never processed', () => {
             // Internal state does not exist until processed
             assert.equal(parameter.getValue({
-              url: '/v2/pet/1'
+              url: '/v2/pet/1',
             }).value, 1);
           });
 
-          it('processed', function () {
+          it('processed', () => {
             // Internal state does not exist until processed
             assert.equal(parameter.getValue({
-              url: '/v2/pet/1'
+              url: '/v2/pet/1',
             }).value, 1);
 
             // Call again to make sure we're using the internal cache and not reprocessing
             assert.equal(parameter.getValue({
-              url: '/v2/pet/1'
+              url: '/v2/pet/1',
             }).value, 1);
           });
 
-          describe('default values', function () {
-            it('provided (array items array)', function (done) {
+          describe('default values', () => {
+            it('provided (array items array)', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
                   type: 'string',
-                  default: 'available'
+                  default: 'available',
                 },
                 {
-                  type: 'integer'
-                }
+                  type: 'integer',
+                },
               ];
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
-                    query: {}
+                    query: {},
                   }).value, ['available', undefined]);
                 })
                 .then(done, done);
             });
 
-            it('provided (array items object)', function (done) {
+            it('provided (array items object)', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
-                    query: {}
+                    query: {},
                   }).value, ['available']);
                 })
                 .then(done, done);
             });
 
-            it('provided (non-array)', function (done) {
+            it('provided (non-array)', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.equal(apiDef.getOperation('/pet/{petId}', 'delete').getParameter('api_key').getValue({
-                    headers: {}
+                    headers: {},
                   }).value, '');
                 })
                 .then(done, done);
             });
 
-            it('provided (global array default)', function (done) {
+            it('provided (global array default)', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
                   type: 'string',
-                }
+                },
               ];
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
-                    query: {}
+                    query: {},
                   }).value, ['available', 'pending']);
                 })
                 .then(done, done);
             });
 
-            it('provided (global array default + items default) : should take the items default', function (done) {
+            it('provided (global array default + items default) : should take the items default', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
-                    query: {}
+                    query: {},
                   }).value, ['available']);
                 })
                 .then(done, done);
             });
 
-            it('missing (array items array)', function (done) {
+            it('missing (array items array)', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
-                  type: 'string'
+                  type: 'string',
                 },
                 {
-                  type: 'integer'
-                }
+                  type: 'integer',
+                },
               ];
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.ok(_.isUndefined(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
-                    query: {}
+                    query: {},
                   }).value));
                 })
                 .then(done, done);
             });
 
-            it('missing (array items object)', function (done) {
+            it('missing (array items object)', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items.default;
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.ok(_.isUndefined(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
-                    query: {}
+                    query: {},
                   }).value));
                 })
                 .then(done, done);
             });
 
-            it('missing (non-array)', function (done) {
+            it('missing (non-array)', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   assert.ok(_.isUndefined(apiDef.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({
-                    url: '/v2/pet'
+                    url: '/v2/pet',
                   }).value));
                 })
                 .then(done, done);
             });
           });
 
-          it('optional value', function (done) {
+          it('optional value', (done) => {
             var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
               name: 'age',
               type: 'integer',
-                in: 'query',
-              required: false
+              in: 'query',
+              required: false,
             });
 
             Sway.create({
-              definition: cOAIDoc
+              definition: cOAIDoc,
             })
-              .then(function (apiDef) {
+              .then((apiDef) => {
                 var optionalValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('age').getValue({
-                  query: {}
+                  query: {},
                 });
 
                 assert.ok(_.isUndefined(optionalValue.raw));
@@ -769,8 +774,8 @@ function runTests (mode) {
               .then(done, done);
           });
 
-          describe('type coercion', function () {
-            function validateDate (actual, expected) {
+          describe('type coercion', () => {
+            function validateDate(actual, expected) {
               assert.ok(actual instanceof Date);
               assert.equal(actual.toISOString(), expected.toISOString());
             }
@@ -780,181 +785,181 @@ function runTests (mode) {
             var multipleParamValue;
             var singleStrBooleanLikeValue;
 
-            before(function (done) {
+            before((done) => {
               var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 name: 'versions',
-                  in: 'query',
+                in: 'query',
                 type: 'array',
                 items: {
-                  type: 'string'
-                }
+                  type: 'string',
+                },
               });
 
               // Test primitive values, because req.query.PARAM will return a primitive
               // if only one is passed to the query param.
-              Sway.create({definition: coaiDoc})
-                .then(function (apiDef) {
+              Sway.create({ definition: coaiDoc })
+                .then((apiDef) => {
                   var parameter = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('versions');
 
                   // Test a string value that JSON.parse would coerse to Number
                   singleNumParamValue = parameter.getValue({
                     query: {
-                      versions: '1.1'
-                    }
+                      versions: '1.1',
+                    },
                   });
                   // Test a string value that JSON.parse would coerse to Number
                   singleStrBooleanLikeValue = parameter.getValue({
                     query: {
-                      versions: 'true'
-                    }
+                      versions: 'true',
+                    },
                   });
                   // Test a string value
                   singleStrParamValue = parameter.getValue({
                     query: {
-                      versions: '1.1#rc'
-                    }
+                      versions: '1.1#rc',
+                    },
                   });
                   // Test an array value
                   multipleParamValue = parameter.getValue({
                     query: {
-                      versions: ['1.0', '1.1#rc']
-                    }
+                      versions: ['1.0', '1.1#rc'],
+                    },
                   });
                 })
                 .then(done, done);
             });
 
-            describe('array', function () {
-              it('items array', function (done) {
+            describe('array', () => {
+              it('items array', (done) => {
                 var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                   {
-                    type: 'string'
+                    type: 'string',
                   },
                   {
-                    type: 'string'
-                  }
+                    type: 'string',
+                  },
                 ];
 
                 Sway.create({
-                  definition: cOAIDoc
+                  definition: cOAIDoc,
                 })
-                  .then(function (apiDef) {
+                  .then((apiDef) => {
                     assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                       query: {
                         status: [
-                          'one', 'two'
-                        ]
-                      }
+                          'one', 'two',
+                        ],
+                      },
                     }).value, ['one', 'two']);
                   })
                   .then(done, done);
               });
 
-              it('items object', function () {
+              it('items object', () => {
                 assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
                     status: [
-                      'available', 'pending'
-                    ]
-                  }
+                      'available', 'pending',
+                    ],
+                  },
                 }).value, ['available', 'pending']);
               });
 
-              it('non-array JSON string request value', function () {
+              it('non-array JSON string request value', () => {
                 assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
-                    status: '["pending"]'
-                  }
+                    status: '["pending"]',
+                  },
                 }).value, ['pending']);
               });
 
-              it('non-array string request value', function () {
+              it('non-array string request value', () => {
                 assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
-                    status: 'pending'
-                  }
+                    status: 'pending',
+                  },
                 }).value, ['pending']);
               });
 
-              it('array value', function () {
+              it('array value', () => {
                 assert.ok(multipleParamValue.valid);
               });
 
-              it('array request value', function () {
+              it('array request value', () => {
                 assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
-                    status: ['available', 'pending']
-                  }
+                    status: ['available', 'pending'],
+                  },
                 }).value, ['available', 'pending']);
               });
 
-              it('string value that could be coersed to Number', function () {
+              it('string value that could be coersed to Number', () => {
                 assert.ok(singleNumParamValue.valid);
               });
 
-              it('string value that could be coersed to Boolean', function () {
+              it('string value that could be coersed to Boolean', () => {
                 assert.ok(singleStrBooleanLikeValue.valid);
               });
 
-              it('string value (as req.query.param returns primitive if only one param is passed)', function () {
+              it('string value (as req.query.param returns primitive if only one param is passed)', () => {
                 assert.ok(singleStrParamValue.valid);
               });
 
-              describe('collectionFormat', function () {
-                it('default (csv)', function (done) {
+              describe('collectionFormat', () => {
+                it('default (csv)', (done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat;
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
-                          status: 'available,pending'
-                        }
+                          status: 'available,pending',
+                        },
                       }).value, ['available', 'pending']);
                     })
                     .then(done, done);
                 });
 
-                it('csv', function (done) {
+                it('csv', (done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'csv';
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
-                          status: 'available,pending'
-                        }
+                          status: 'available,pending',
+                        },
                       }).value, ['available', 'pending']);
                     })
                     .then(done, done);
                 });
 
-                describe('multi', function () {
-                  it('multiple values', function (done) {
+                describe('multi', () => {
+                  it('multiple values', (done) => {
                     var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                     Sway.create({
-                      definition: cOAIDoc
+                      definition: cOAIDoc,
                     })
-                      .then(function (apiDef) {
+                      .then((apiDef) => {
                         assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                           query: {
                             status: [
-                              'available', 'pending'
-                            ]
-                          }
+                              'available', 'pending',
+                            ],
+                          },
                         }).value, ['available', 'pending']);
                       })
                       .then(done, done);
@@ -962,93 +967,93 @@ function runTests (mode) {
 
                   // This test is required to make sure that when the query string parser only sees one item that an
                   // array is still returned.
-                  it('single value', function (done) {
+                  it('single value', (done) => {
                     var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                     Sway.create({
-                      definition: cOAIDoc
+                      definition: cOAIDoc,
                     })
-                      .then(function (apiDef) {
+                      .then((apiDef) => {
                         assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                           query: {
-                            status: 'available'
-                          }
+                            status: 'available',
+                          },
                         }).value, ['available']);
                       })
                       .then(done, done);
                   });
                 });
 
-                it('pipes', function (done) {
+                it('pipes', (done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'pipes';
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
-                          status: 'available|pending'
-                        }
+                          status: 'available|pending',
+                        },
                       }).value, ['available', 'pending']);
                     })
                     .then(done, done);
                 });
 
-                it('ssv', function (done) {
+                it('ssv', (done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'ssv';
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
-                          status: 'available pending'
-                        }
+                          status: 'available pending',
+                        },
                       }).value, ['available', 'pending']);
                     })
                     .then(done, done);
                 });
 
-                it('tsv', function (done) {
+                it('tsv', (done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'tsv';
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
-                          status: 'available\tpending'
-                        }
+                          status: 'available\tpending',
+                        },
                       }).value, ['available', 'pending']);
                     })
                     .then(done, done);
                 });
 
-                it('invalid', function (done) {
+                it('invalid', (done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'invalid';
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       var paramValue = apiDef.getOperation('/pet/findByStatus', 'get')
-                            .getParameter('status')
-                            .getValue({
-                              query: {
-                                status: '1invalid2invalid3'
-                              }
-                            });
+                        .getParameter('status')
+                        .getValue({
+                          query: {
+                            status: '1invalid2invalid3',
+                          },
+                        });
 
                       assert.ok(_.isUndefined(paramValue.value));
                       assert.equal(paramValue.error.message, 'Invalid \'collectionFormat\' value: invalid');
@@ -1058,63 +1063,63 @@ function runTests (mode) {
               });
             });
 
-            describe('boolean', function () {
+            describe('boolean', () => {
               var cParam;
 
-              before(function (done) {
+              before((done) => {
                 var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/available'] = {
                   parameters: [
                     {
                       name: 'status',
-                        in: 'query',
+                      in: 'query',
                       description: 'Whether or not the pet is available',
                       required: true,
-                      type: 'boolean'
-                    }
+                      type: 'boolean',
+                    },
                   ],
                   get: {
-                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
-                  }
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses,
+                  },
                 };
 
                 Sway.create({
-                  definition: cOAIDoc
+                  definition: cOAIDoc,
                 })
-                  .then(function (apiDef) {
+                  .then((apiDef) => {
                     cParam = apiDef.getOperation('/pet/available', 'get').getParameter('status');
                   })
                   .then(done, done);
               });
 
-              it('boolean request value', function () {
+              it('boolean request value', () => {
                 assert.equal(cParam.getValue({
                   query: {
-                    status: true
-                  }
+                    status: true,
+                  },
                 }).value, true);
               });
 
-              it('string request value', function () {
+              it('string request value', () => {
                 assert.equal(cParam.getValue({
                   query: {
-                    status: 'false'
-                  }
+                    status: 'false',
+                  },
                 }).value, false);
 
                 assert.equal(cParam.getValue({
                   query: {
-                    status: 'true'
-                  }
+                    status: 'true',
+                  },
                 }).value, true);
               });
 
-              it('invalid request value', function () {
+              it('invalid request value', () => {
                 var paramValue = cParam.getValue({
                   query: {
-                    status: 'invalid'
-                  }
+                    status: 'invalid',
+                  },
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
@@ -1122,10 +1127,10 @@ function runTests (mode) {
               });
             });
 
-            describe('integer', function () {
+            describe('integer', () => {
               var cParam;
 
-              before(function (done) {
+              before((done) => {
                 var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
@@ -1133,42 +1138,42 @@ function runTests (mode) {
                     cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
-                        in: 'query',
+                      in: 'query',
                       description: 'Maximum number of friends returned',
-                      type: 'integer'
-                    }
+                      type: 'integer',
+                    },
                   ],
                   get: {
-                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
-                  }
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses,
+                  },
                 };
 
                 Sway.create({
-                  definition: cOAIDoc
+                  definition: cOAIDoc,
                 })
-                  .then(function (apiDef) {
+                  .then((apiDef) => {
                     cParam = apiDef.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
                   })
                   .then(done, done);
               });
 
-              it('integer request value', function () {
+              it('integer request value', () => {
                 assert.equal(cParam.getValue({
                   query: {
-                    limit: 5
-                  }
+                    limit: 5,
+                  },
                 }).value, 5);
               });
 
-              it('string request value', function () {
+              it('string request value', () => {
                 assert.equal(cParam.getValue({
                   query: {
-                    limit: '5'
-                  }
+                    limit: '5',
+                  },
                 }).value, 5);
               });
 
-              it('invalid request value', function (done) {
+              it('invalid request value', (done) => {
                 var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
@@ -1176,28 +1181,28 @@ function runTests (mode) {
                     cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
-                        in: 'query',
+                      in: 'query',
                       description: 'Maximum number of friends returned',
-                      type: 'number'
-                    }
+                      type: 'number',
+                    },
                   ],
                   get: {
-                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
-                  }
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses,
+                  },
                 };
 
                 Sway.create({
-                  definition: cOAIDoc
+                  definition: cOAIDoc,
                 })
-                  .then(function (apiDef) {
+                  .then((apiDef) => {
                     var paramValue = apiDef
-                          .getOperation('/pet/{petId}/friends', 'get')
-                          .getParameter('limit')
-                          .getValue({
-                            query: {
-                              limit: '2something'
-                            }
-                          });
+                      .getOperation('/pet/{petId}/friends', 'get')
+                      .getParameter('limit')
+                      .getValue({
+                        query: {
+                          limit: '2something',
+                        },
+                      });
 
                     assert.ok(_.isUndefined(paramValue.value));
                     assert.equal(paramValue.error.message, 'Expected type number but found type string');
@@ -1206,31 +1211,31 @@ function runTests (mode) {
               });
             });
 
-            describe('object', function () {
+            describe('object', () => {
               var pet = {
-                name: 'My Pet'
+                name: 'My Pet',
               };
               var cParam;
 
-              before(function () {
+              before(() => {
                 cParam = apiDefinition.getOperation('/pet', 'post').getParameter('body');
               });
 
-              it('object request value', function () {
+              it('object request value', () => {
                 assert.deepEqual(cParam.getValue({
-                  body: pet
+                  body: pet,
                 }).value, pet);
               });
 
-              it('string request value', function () {
+              it('string request value', () => {
                 assert.deepEqual(cParam.getValue({
-                  body: JSON.stringify(pet)
+                  body: JSON.stringify(pet),
                 }).value, pet);
               });
 
-              it('invalid request value (non-string)', function () {
+              it('invalid request value (non-string)', () => {
                 var paramValue = cParam.getValue({
-                  body: 1 // We cannot use string because it would be processed by different logic
+                  body: 1, // We cannot use string because it would be processed by different logic
                 });
 
                 assert.equal(paramValue.value, 1);
@@ -1242,21 +1247,21 @@ function runTests (mode) {
                     code: 'INVALID_TYPE',
                     message: 'Expected type object but found type integer',
                     params: ['object', 'integer'],
-                    path: []
-                  }
+                    path: [],
+                  },
                 ]);
                 assert.deepEqual(paramValue.error.path, [
                   'paths',
                   '/pet',
                   'post',
                   'parameters',
-                  '0'
+                  '0',
                 ]);
               });
 
-              it('invalid request value (string)', function () {
+              it('invalid request value (string)', () => {
                 var paramValue = cParam.getValue({
-                  body: 'invalid'
+                  body: 'invalid',
                 });
 
                 assert.equal(paramValue.value, 'invalid');
@@ -1268,23 +1273,23 @@ function runTests (mode) {
                     code: 'INVALID_TYPE',
                     message: 'Expected type object but found type string',
                     params: ['object', 'string'],
-                    path: []
-                  }
+                    path: [],
+                  },
                 ]);
                 assert.deepEqual(paramValue.error.path, [
                   'paths',
                   '/pet',
                   'post',
                   'parameters',
-                  '0'
+                  '0',
                 ]);
               });
             });
 
-            describe('number', function () {
+            describe('number', () => {
               var cParam;
 
-              before(function (done) {
+              before((done) => {
                 var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
@@ -1292,41 +1297,41 @@ function runTests (mode) {
                     cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
-                        in: 'query',
+                      in: 'query',
                       description: 'Maximum number of friends returned',
-                      type: 'number'
-                    }
+                      type: 'number',
+                    },
                   ],
                   get: {
-                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
-                  }
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses,
+                  },
                 };
 
                 Sway.create({
-                  definition: cOAIDoc
+                  definition: cOAIDoc,
                 })
-                  .then(function (apiDef) {
+                  .then((apiDef) => {
                     cParam = apiDef.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
                   })
                   .then(done, done);
               });
 
-              it('number request value', function () {
+              it('number request value', () => {
                 assert.equal(cParam.getValue({
                   query: {
-                    limit: 5.5
-                  }
+                    limit: 5.5,
+                  },
                 }).value, 5.5);
               });
 
-              it('string request value', function () {
+              it('string request value', () => {
                 assert.equal(cParam.getValue({
                   query: {
-                    limit: '5.5'
-                  }
+                    limit: '5.5',
+                  },
                 }).value, 5.5);
               });
-              it('invalid request value', function (done) {
+              it('invalid request value', (done) => {
                 var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
@@ -1334,28 +1339,28 @@ function runTests (mode) {
                     cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
-                        in: 'query',
+                      in: 'query',
                       description: 'Maximum number of friends returned',
-                      type: 'number'
-                    }
+                      type: 'number',
+                    },
                   ],
                   get: {
-                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
-                  }
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses,
+                  },
                 };
 
                 Sway.create({
-                  definition: cOAIDoc
+                  definition: cOAIDoc,
                 })
-                  .then(function (apiDef) {
+                  .then((apiDef) => {
                     var paramValue = apiDef
-                          .getOperation('/pet/{petId}/friends', 'get')
-                          .getParameter('limit')
-                          .getValue({
-                            query: {
-                              limit: '2something'
-                            }
-                          });
+                      .getOperation('/pet/{petId}/friends', 'get')
+                      .getParameter('limit')
+                      .getValue({
+                        query: {
+                          limit: '2something',
+                        },
+                      });
 
                     assert.ok(_.isUndefined(paramValue.value));
                     assert.equal(paramValue.error.message, 'Expected type number but found type string');
@@ -1364,75 +1369,75 @@ function runTests (mode) {
               });
             });
 
-            describe('string', function () {
+            describe('string', () => {
               var cParam;
 
-              before(function () {
+              before(() => {
                 cParam = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('name');
               });
 
-              it('string request value', function () {
+              it('string request value', () => {
                 assert.equal(cParam.getValue({
                   body: {
-                    name: 'New Name'
-                  }
+                    name: 'New Name',
+                  },
                 }).value, 'New Name');
               });
 
-              it('invalid request value', function () {
+              it('invalid request value', () => {
                 var paramValue = cParam.getValue({
                   body: {
-                    name: 1
-                  }
+                    name: 1,
+                  },
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
                 assert.equal(paramValue.error.message, 'Expected type string but found type number');
               });
 
-              describe('date format', function () {
+              describe('date format', () => {
                 var date = new Date('2015-04-09');
                 var validValues = ['2015-04-09', '0000-01-01', '9999-12-31'];
                 var invalidValues = ['invalid', '12345', 'jan 5', '"2015-04-09"',
                   '2015-00-09', '2015-13-09', '2015-04-00', '2015-04-32', '10000-01-01'];
 
-                before(function (done) {
+                before((done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/{petId}'].parameters.push({
                     name: 'createdBefore',
-                      in: 'query',
+                    in: 'query',
                     description: 'Find pets created before',
                     type: 'string',
-                    format: 'date'
+                    format: 'date',
                   });
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       cParam = apiDef.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
                     })
                     .then(done, done);
                 });
 
-                it('date request value', function () {
+                it('date request value', () => {
                   var paramValue = cParam.getValue({
                     query: {
-                      createdBefore: date
-                    }
+                      createdBefore: date,
+                    },
                   });
 
                   validateDate(paramValue.value, date);
                   assert.ok(paramValue.valid);
                 });
 
-                _.each(validValues, function (value, index) {
-                  it('string request value ' + index, function () {
+                _.each(validValues, (value, index) => {
+                  it(`string request value ${index}`, () => {
                     var paramValue = cParam.getValue({
                       query: {
-                        createdBefore: value
-                      }
+                        createdBefore: value,
+                      },
                     });
 
                     validateDate(paramValue.value, new Date(value));
@@ -1440,21 +1445,21 @@ function runTests (mode) {
                   });
                 });
 
-                _.each(invalidValues, function (value, index) {
-                  it('invalid request value ' + index, function () {
+                _.each(invalidValues, (value, index) => {
+                  it(`invalid request value ${index}`, () => {
                     var paramValue = cParam.getValue({
                       query: {
-                        createdBefore: value
-                      }
+                        createdBefore: value,
+                      },
                     });
 
                     assert.ok(_.isUndefined(paramValue.value));
-                    assert.equal(paramValue.error.message, 'Object didn\'t pass validation for format date: ' + value);
+                    assert.equal(paramValue.error.message, `Object didn't pass validation for format date: ${value}`);
                   });
                 });
               });
 
-              describe('date-time format', function () {
+              describe('date-time format', () => {
                 var dateTime = new Date('2015-04-09T14:07:26-06:00');
                 var validValues = [
                   '2015-04-09T14:07:26-06:00', '2015-04-09T14:07:26.0182-06:00', '2015-04-09T14:07:26+06:00',
@@ -1464,43 +1469,43 @@ function runTests (mode) {
                   '2015-04-32T14:07:26-06:00', '2015-04-09T24:07:26-06:00', '2015-04-09T14:60:26-06:00',
                   '2015-04-09T14:07:61-06:00', '2015-04-09T14:07:26-25:00', '2015-04-09T14:07:26+25:00'];
 
-                before(function (done) {
+                before((done) => {
                   var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/{petId}'].parameters.push({
                     name: 'createdBefore',
-                      in: 'query',
+                    in: 'query',
                     description: 'Find pets created before',
                     type: 'string',
-                    format: 'date-time'
+                    format: 'date-time',
                   });
 
                   Sway.create({
-                    definition: cOAIDoc
+                    definition: cOAIDoc,
                   })
-                    .then(function (apiDef) {
+                    .then((apiDef) => {
                       cParam = apiDef.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
                     })
                     .then(done, done);
                 });
 
-                it('date request value', function () {
+                it('date request value', () => {
                   var paramValue = cParam.getValue({
                     query: {
-                      createdBefore: dateTime
-                    }
+                      createdBefore: dateTime,
+                    },
                   });
 
                   validateDate(paramValue.value, dateTime);
                   assert.ok(paramValue.valid);
                 });
 
-                _.each(validValues, function (value, index) {
-                  it('string request value ' + index, function () {
+                _.each(validValues, (value, index) => {
+                  it(`string request value ${index}`, () => {
                     var paramValue = cParam.getValue({
                       query: {
-                        createdBefore: value
-                      }
+                        createdBefore: value,
+                      },
                     });
 
                     validateDate(paramValue.value, new Date(value));
@@ -1508,38 +1513,40 @@ function runTests (mode) {
                   });
                 });
 
-                _.each(invalidValues, function (value, index) {
-                  it('invalid request value ' + index, function () {
+                _.each(invalidValues, (value, index) => {
+                  it(`invalid request value ${index}`, () => {
                     var paramValue = cParam.getValue({
                       query: {
-                        createdBefore: value
-                      }
+                        createdBefore: value,
+                      },
                     });
 
                     assert.ok(_.isUndefined(paramValue.value));
-                    assert.equal(paramValue.error.message,
-                                 'Object didn\'t pass validation for format date-time: ' + value);
+                    assert.equal(
+                      paramValue.error.message,
+                      `Object didn't pass validation for format date-time: ${value}`,
+                    );
                   });
                 });
               });
             });
 
-            it('invalid type', function (done) {
+            it('invalid type', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet'].post.parameters[0].schema = {
-                type: 'invalid'
+                type: 'invalid',
               };
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
-                    body: {}
+                    body: {},
                   });
 
-                  assert.ok(!paramValue.valid)
+                  assert.ok(!paramValue.valid);
                   assert.equal('Invalid \'type\' value: invalid', paramValue.error.message);
                   assert.deepEqual({}, paramValue.raw);
                   assert.ok(_.isUndefined(paramValue.value));
@@ -1547,17 +1554,17 @@ function runTests (mode) {
                 .then(done, done);
             });
 
-            it('missing type', function (done) {
+            it('missing type', (done) => {
               var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet'].post.parameters[0].schema = {};
 
               Sway.create({
-                definition: cOAIDoc
+                definition: cOAIDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
-                    body: {}
+                    body: {},
                   });
 
                   assert.deepEqual({}, paramValue.raw);
@@ -1569,10 +1576,10 @@ function runTests (mode) {
         });
       });
 
-      describe('validation', function () {
-        it('missing required value (with default)', function () {
+      describe('validation', () => {
+        it('missing required value (with default)', () => {
           var paramValue = apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
-            query: {}
+            query: {},
           });
 
           assert.deepEqual(paramValue.value, ['available']);
@@ -1580,9 +1587,9 @@ function runTests (mode) {
           assert.ok(_.isUndefined(paramValue.error));
         });
 
-        it('missing required value (without default)', function () {
+        it('missing required value (without default)', () => {
           var paramValue = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
-            query: {}
+            query: {},
           });
           var error = paramValue.error;
 
@@ -1593,9 +1600,9 @@ function runTests (mode) {
           assert.ok(error.failedValidation);
         });
 
-        describe('provided empty value', function () {
-          describe('integer', function () {
-            it('allowEmptyValue false', function (done) {
+        describe('provided empty value', () => {
+          describe('integer', () => {
+            it('allowEmptyValue false', (done) => {
               var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
@@ -1603,17 +1610,17 @@ function runTests (mode) {
                 type: 'integer',
                 format: 'int32',
                 name: 'limit',
-                  in: 'query'
+                in: 'query',
               });
 
               Sway.create({
-                definition: coaiDoc
+                definition: coaiDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
-                      limit: ''
-                    }
+                      limit: '',
+                    },
                   });
 
                   assert.equal(paramValue.raw, '');
@@ -1624,25 +1631,25 @@ function runTests (mode) {
                 .then(done, done);
             });
 
-            it('allowEmptyValue true', function (done) {
+            it('allowEmptyValue true', (done) => {
               var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'integer',
                 format: 'int32',
                 name: 'limit',
-                  in: 'query',
-                allowEmptyValue: true
+                in: 'query',
+                allowEmptyValue: true,
               });
 
               Sway.create({
-                definition: coaiDoc
+                definition: coaiDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
-                      limit: ''
-                    }
+                      limit: '',
+                    },
                   });
 
                   assert.equal(paramValue.raw, '');
@@ -1653,8 +1660,8 @@ function runTests (mode) {
             });
           });
 
-          describe('number', function () {
-            it('allowEmptyValue false', function (done) {
+          describe('number', () => {
+            it('allowEmptyValue false', (done) => {
               var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
@@ -1662,17 +1669,17 @@ function runTests (mode) {
                 type: 'number',
                 format: 'int32',
                 name: 'limit',
-                  in: 'query'
+                in: 'query',
               });
 
               Sway.create({
-                definition: coaiDoc
+                definition: coaiDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
-                      limit: ''
-                    }
+                      limit: '',
+                    },
                   });
 
                   assert.equal(paramValue.raw, '');
@@ -1683,25 +1690,25 @@ function runTests (mode) {
                 .then(done, done);
             });
 
-            it('allowEmptyValue true', function (done) {
+            it('allowEmptyValue true', (done) => {
               var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'number',
                 format: 'int32',
                 name: 'limit',
-                  in: 'query',
-                allowEmptyValue: true
+                in: 'query',
+                allowEmptyValue: true,
               });
 
               Sway.create({
-                definition: coaiDoc
+                definition: coaiDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
-                      limit: ''
-                    }
+                      limit: '',
+                    },
                   });
 
                   assert.equal(paramValue.raw, '');
@@ -1712,25 +1719,25 @@ function runTests (mode) {
             });
           });
 
-          describe('string', function () {
-            it('allowEmptyValue false', function (done) {
+          describe('string', () => {
+            it('allowEmptyValue false', (done) => {
               var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 allowEmptyValue: false,
                 type: 'string',
                 name: 'limit',
-                  in: 'query'
+                in: 'query',
               });
 
               Sway.create({
-                definition: coaiDoc
+                definition: coaiDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
-                      limit: ''
-                    }
+                      limit: '',
+                    },
                   });
 
                   assert.equal(paramValue.raw, '');
@@ -1741,24 +1748,24 @@ function runTests (mode) {
                 .then(done, done);
             });
 
-            it('allowEmptyValue true', function (done) {
+            it('allowEmptyValue true', (done) => {
               var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'string',
                 name: 'limit',
-                  in: 'query',
-                allowEmptyValue: true
+                in: 'query',
+                allowEmptyValue: true,
               });
 
               Sway.create({
-                definition: coaiDoc
+                definition: coaiDoc,
               })
-                .then(function (apiDef) {
+                .then((apiDef) => {
                   var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
-                      limit: ''
-                    }
+                      limit: '',
+                    },
                   });
 
                   assert.equal(paramValue.raw, '');
@@ -1770,13 +1777,13 @@ function runTests (mode) {
           });
         });
 
-        it('provided required value', function () {
+        it('provided required value', () => {
           var pet = {
             name: 'Sparky',
-            photoUrls: []
+            photoUrls: [],
           };
           var paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
-            body: pet
+            body: pet,
           });
 
           assert.deepEqual(paramValue.value, pet);
@@ -1784,9 +1791,9 @@ function runTests (mode) {
           assert.ok(paramValue.valid);
         });
 
-        it('provided value fails JSON Schema validation', function () {
+        it('provided value fails JSON Schema validation', () => {
           var paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
-            body: {}
+            body: {},
           });
           var error = paramValue.error;
 
@@ -1800,14 +1807,14 @@ function runTests (mode) {
               code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
               message: 'Missing required property: photoUrls',
               params: ['photoUrls'],
-              path: []
+              path: [],
             },
             {
               code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
               message: 'Missing required property: name',
               params: ['name'],
-              path: []
-            }
+              path: [],
+            },
           ]);
         });
       });
@@ -1815,7 +1822,7 @@ function runTests (mode) {
   });
 }
 
-describe('Parameter', function () {
+describe('Parameter', () => {
   // Swagger document without references
   runTests('no-refs');
   // Swagger document with references
