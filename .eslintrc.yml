@@ -1,0 +1,40 @@
+env:
+  browser: true
+  commonjs: true
+  es2021: true
+  mocha: true
+extends: airbnb-base
+overrides:
+  - files:
+      - "test/*.js"
+    rules:
+      func-names: off
+parserOptions:
+  ecmaVersion: latest
+rules:
+  max-len:
+    - 1
+    - 200
+
+  # TODO: remove after alignment effort with the original package
+  no-console: off
+  no-param-reassign: off
+  no-multi-assign: off
+  func-names: off
+  no-underscore-dangle: off
+  no-loop-func: off
+  no-use-before-define: off
+  prefer-spread: off
+  prefer-const: off
+  no-buffer-constructor: off
+  import/order: off
+  no-shadow: off
+  no-unused-expressions: off
+  prefer-destructuring: off
+  no-mixed-operators: off
+  no-var: off
+  vars-on-top: off
+  global-require: off
+  no-unreachable: off
+  import/no-unresolved: off
+  # END
