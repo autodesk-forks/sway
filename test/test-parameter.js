@@ -344,7 +344,7 @@ function runTests(mode) {
             try {
               parameter.getValue({});
             } catch (err) {
-              tHelpers.shouldNotHadFailed;
+              tHelpers.shouldNotHadFailed();
             }
           });
         });
@@ -406,7 +406,8 @@ function runTests(mode) {
             try {
               parameter.getValue({});
             } catch (err) {
-              tHelpers.shouldNotHadFailed;
+              // TODO: what this line in the original repo is supposed to do?
+              // tHelpers.shouldNotHadFailed;
             }
           });
         });
