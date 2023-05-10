@@ -59,7 +59,7 @@ function runTests(mode) {
         let def;
 
         if (index === 0) {
-          def = pathDef.parameters[0];
+          ({ parameters: [def] } = pathDef);
           ptr += 'parameters/0';
         } else {
           def = pathDef.post.parameters[index - 1];
@@ -73,7 +73,7 @@ function runTests(mode) {
 
     describe('#getSchema', () => {
       it('should handle parameter with explicit schema definition (body parameter)', () => {
-        let schema = apiDefinition.getOperation('/pet', 'post').getParameter('body').schema;
+        let { schema } = apiDefinition.getOperation('/pet', 'post').getParameter('body');
 
         // Make sure the generated JSON Schema is identical to its referenced schema
         assert.deepEqual(schema, apiDefinition.definitionFullyResolved.definitions.Pet);
@@ -111,7 +111,7 @@ function runTests(mode) {
       });
 
       it('should handle parameter with schema-like definition (non-body parameter)', () => {
-        let schema = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').schema;
+        let { schema } = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags');
 
         // Make sure the generated JSON Schema is as expected
         assert.deepEqual(schema, {
@@ -1591,7 +1591,7 @@ function runTests(mode) {
           let paramValue = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
             query: {},
           });
-          let error = paramValue.error;
+          let { error } = paramValue;
 
           assert.ok(_.isUndefined(paramValue.value));
           assert.ok(paramValue.valid === false);
@@ -1795,7 +1795,7 @@ function runTests(mode) {
           let paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
             body: {},
           });
-          let error = paramValue.error;
+          let { error } = paramValue;
 
           assert.deepEqual(paramValue.value, {});
           assert.ok(paramValue.valid === false);

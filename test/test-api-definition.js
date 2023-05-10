@@ -1480,7 +1480,7 @@ function runTests(mode) {
 
         it('multiple operations with the same operationId', (done) => {
           let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-          let operationId = cOAIDoc.paths['/pet'].post.operationId;
+          let { operationId } = cOAIDoc.paths['/pet'].post;
 
           cOAIDoc.paths['/pet'].put.operationId = operationId;
 
@@ -1787,7 +1787,7 @@ function runTests(mode) {
                   assert.deepEqual(results.warnings, []);
                   assert.equal(results.errors.length, 1);
 
-                  error = results.errors[0];
+                  ({ errors: [error] } = results);
 
                   assert.equal(error.code, 'UNRESOLVABLE_REFERENCE');
                   assert.equal(error.message, 'Reference could not be resolved: fake.json');

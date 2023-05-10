@@ -105,7 +105,7 @@ describe('format validators', () => {
     });
 
     it('bad value', () => {
-      let error = badParamValue.error;
+      let { error } = badParamValue;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));
@@ -169,7 +169,7 @@ describe('format validators', () => {
     });
 
     it('bad value', () => {
-      let error = badParamValue.error;
+      let { error } = badParamValue;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));

@@ -52,7 +52,7 @@ function runTests(mode) {
   describe(`should handle OpenAPI document ${label} relative references`, () => {
     it('should have proper structure', () => {
       let path = '/pet/{petId}';
-      let pathObject = apiDefinition.getOperation(path, 'get').pathObject;
+      let { pathObject } = apiDefinition.getOperation(path, 'get');
 
       assert.deepEqual(pathObject.apiDefinition, apiDefinition);
       assert.equal(pathObject.path, path);
