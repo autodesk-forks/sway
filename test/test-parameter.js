@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-var _ = require('lodash');
-var assert = require('assert');
-var helpers = require('../lib/helpers'); // Helpers from Sway
-var tHelpers = require('./helpers');
+let _ = require('lodash');
+let assert = require('assert');
+let helpers = require('../lib/helpers'); // Helpers from Sway
+let tHelpers = require('./helpers');
 // Helpers for this suite of tests
-var Sway = tHelpers.getSway();
+let Sway = tHelpers.getSway();
 
 function runTests(mode) {
-  var label = mode === 'with-refs' ? 'with' : 'without';
-  var apiDefinition;
+  let label = mode === 'with-refs' ? 'with' : 'without';
+  let apiDefinition;
 
   before((done) => {
     function callback(apiDef) {
@@ -51,12 +51,12 @@ function runTests(mode) {
 
   describe(`should handle OpenAPI document ${label} relative references`, () => {
     it('should have proper structure', () => {
-      var path = '/pet/{petId}';
-      var pathDef = apiDefinition.definitionFullyResolved.paths[path];
+      let path = '/pet/{petId}';
+      let pathDef = apiDefinition.definitionFullyResolved.paths[path];
 
       _.each(apiDefinition.getOperation(path, 'post').getParameters(), (parameter, index) => {
-        var ptr = '#/paths/~1pet~1{petId}/';
-        var def;
+        let ptr = '#/paths/~1pet~1{petId}/';
+        let def;
 
         if (index === 0) {
           def = pathDef.parameters[0];
@@ -73,7 +73,7 @@ function runTests(mode) {
 
     describe('#getSchema', () => {
       it('should handle parameter with explicit schema definition (body parameter)', () => {
-        var schema = apiDefinition.getOperation('/pet', 'post').getParameter('body').schema;
+        let schema = apiDefinition.getOperation('/pet', 'post').getParameter('body').schema;
 
         // Make sure the generated JSON Schema is identical to its referenced schema
         assert.deepEqual(schema, apiDefinition.definitionFullyResolved.definitions.Pet);
@@ -111,7 +111,7 @@ function runTests(mode) {
       });
 
       it('should handle parameter with schema-like definition (non-body parameter)', () => {
-        var schema = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').schema;
+        let schema = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').schema;
 
         // Make sure the generated JSON Schema is as expected
         assert.deepEqual(schema, {
@@ -154,7 +154,7 @@ function runTests(mode) {
 
     describe('#getSample', () => {
       it('should handle parameter with explicit schema definition (body parameter)', () => {
-        var parameter = apiDefinition.getOperation('/pet', 'post').getParameter('body');
+        let parameter = apiDefinition.getOperation('/pet', 'post').getParameter('body');
 
         try {
           helpers.validateAgainstSchema(
@@ -168,7 +168,7 @@ function runTests(mode) {
       });
 
       it('should handle parameter with schema-like definition (non-body parameter)', () => {
-        var parameter = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags');
+        let parameter = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags');
 
         try {
           helpers.validateAgainstSchema(
@@ -182,7 +182,7 @@ function runTests(mode) {
       });
 
       it('should handle parameter with date format (Issue 99)', (done) => {
-        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
         cOAIDoc.paths['/pet'].post.parameters.push({
           in: 'query',
@@ -212,11 +212,11 @@ function runTests(mode) {
 
     describe('#getValue', () => {
       it('should throw TypeError for invalid arguments', () => {
-        var scenarios = [
+        let scenarios = [
           [[], 'req is required'],
           [[true], 'req must be an object'],
         ];
-        var param = apiDefinition.getOperation('/pet', 'post').getParameter('body');
+        let param = apiDefinition.getOperation('/pet', 'post').getParameter('body');
 
         _.forEach(scenarios, (scenario) => {
           try {
@@ -231,7 +231,7 @@ function runTests(mode) {
 
       describe('raw values', () => {
         describe('body', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet', 'post').getParameter('body');
@@ -242,7 +242,7 @@ function runTests(mode) {
           });
 
           it('provided value', () => {
-            var provided = {
+            let provided = {
               name: 'Testing',
             };
 
@@ -253,7 +253,7 @@ function runTests(mode) {
         });
 
         describe('formData (file) - required', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file');
@@ -285,7 +285,7 @@ function runTests(mode) {
         });
 
         describe('formData (file) - optional', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('optionalFile');
@@ -301,7 +301,7 @@ function runTests(mode) {
         });
 
         describe('formData (not file) - required', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('name');
@@ -334,7 +334,7 @@ function runTests(mode) {
         });
 
         describe('formData (not file) - optional', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('status');
@@ -350,7 +350,7 @@ function runTests(mode) {
         });
 
         describe('header - required', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'delete').getParameter('api_key');
@@ -396,7 +396,7 @@ function runTests(mode) {
         });
 
         describe('header - optional', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'delete').getParameter('optional_header');
@@ -412,7 +412,7 @@ function runTests(mode) {
         });
 
         describe('path', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('petId');
@@ -447,7 +447,7 @@ function runTests(mode) {
           });
 
           it('provided value (multiple)', (done) => {
-            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.paths['/pet/{petId}/family/{memberId}'] = {
               parameters: [
@@ -478,7 +478,7 @@ function runTests(mode) {
             })
               .then((apiDef) => {
                 _.each(apiDef.getOperation('/pet/{petId}/family/{memberId}', 'get').getParameters(), (param) => {
-                  var expected;
+                  let expected;
 
                   switch (param.name) {
                     case 'petId':
@@ -513,7 +513,7 @@ function runTests(mode) {
         });
 
         describe('query', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status');
@@ -536,7 +536,7 @@ function runTests(mode) {
           });
 
           it('provided value', () => {
-            var statuses = ['available', 'pending'];
+            let statuses = ['available', 'pending'];
 
             assert.deepEqual(parameter.getValue({
               query: {
@@ -547,7 +547,7 @@ function runTests(mode) {
         });
 
         it('invalid \'in\' value', (done) => {
-          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
           cOAIDoc.paths['/pet/{petId}'].parameters[0].in = 'invalid';
 
@@ -579,7 +579,7 @@ function runTests(mode) {
 
       describe('processed values', () => {
         describe('getter', () => {
-          var parameter;
+          let parameter;
 
           before(() => {
             parameter = apiDefinition.getOperation('/pet/{petId}', 'get').getParameter('petId');
@@ -606,7 +606,7 @@ function runTests(mode) {
 
           describe('default values', () => {
             it('provided (array items array)', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
@@ -630,7 +630,7 @@ function runTests(mode) {
             });
 
             it('provided (array items object)', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
                 definition: cOAIDoc,
@@ -644,7 +644,7 @@ function runTests(mode) {
             });
 
             it('provided (non-array)', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
                 definition: cOAIDoc,
@@ -658,7 +658,7 @@ function runTests(mode) {
             });
 
             it('provided (global array default)', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
@@ -679,7 +679,7 @@ function runTests(mode) {
             });
 
             it('provided (global array default + items default) : should take the items default', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
 
@@ -695,7 +695,7 @@ function runTests(mode) {
             });
 
             it('missing (array items array)', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
@@ -718,7 +718,7 @@ function runTests(mode) {
             });
 
             it('missing (array items object)', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items.default;
 
@@ -734,7 +734,7 @@ function runTests(mode) {
             });
 
             it('missing (non-array)', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
                 definition: cOAIDoc,
@@ -749,7 +749,7 @@ function runTests(mode) {
           });
 
           it('optional value', (done) => {
-            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
             cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
               name: 'age',
@@ -762,7 +762,7 @@ function runTests(mode) {
               definition: cOAIDoc,
             })
               .then((apiDef) => {
-                var optionalValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('age').getValue({
+                let optionalValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('age').getValue({
                   query: {},
                 });
 
@@ -780,13 +780,13 @@ function runTests(mode) {
               assert.equal(actual.toISOString(), expected.toISOString());
             }
 
-            var singleNumParamValue;
-            var singleStrParamValue;
-            var multipleParamValue;
-            var singleStrBooleanLikeValue;
+            let singleNumParamValue;
+            let singleStrParamValue;
+            let multipleParamValue;
+            let singleStrBooleanLikeValue;
 
             before((done) => {
-              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 name: 'versions',
@@ -801,7 +801,7 @@ function runTests(mode) {
               // if only one is passed to the query param.
               Sway.create({ definition: coaiDoc })
                 .then((apiDef) => {
-                  var parameter = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('versions');
+                  let parameter = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('versions');
 
                   // Test a string value that JSON.parse would coerse to Number
                   singleNumParamValue = parameter.getValue({
@@ -833,7 +833,7 @@ function runTests(mode) {
 
             describe('array', () => {
               it('items array', (done) => {
-                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                   {
@@ -911,7 +911,7 @@ function runTests(mode) {
 
               describe('collectionFormat', () => {
                 it('default (csv)', (done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat;
 
@@ -929,7 +929,7 @@ function runTests(mode) {
                 });
 
                 it('csv', (done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'csv';
 
@@ -948,7 +948,7 @@ function runTests(mode) {
 
                 describe('multi', () => {
                   it('multiple values', (done) => {
-                    var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                    let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                     Sway.create({
                       definition: cOAIDoc,
@@ -968,7 +968,7 @@ function runTests(mode) {
                   // This test is required to make sure that when the query string parser only sees one item that an
                   // array is still returned.
                   it('single value', (done) => {
-                    var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                    let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                     Sway.create({
                       definition: cOAIDoc,
@@ -985,7 +985,7 @@ function runTests(mode) {
                 });
 
                 it('pipes', (done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'pipes';
 
@@ -1003,7 +1003,7 @@ function runTests(mode) {
                 });
 
                 it('ssv', (done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'ssv';
 
@@ -1021,7 +1021,7 @@ function runTests(mode) {
                 });
 
                 it('tsv', (done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'tsv';
 
@@ -1039,7 +1039,7 @@ function runTests(mode) {
                 });
 
                 it('invalid', (done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'invalid';
 
@@ -1047,7 +1047,7 @@ function runTests(mode) {
                     definition: cOAIDoc,
                   })
                     .then((apiDef) => {
-                      var paramValue = apiDef.getOperation('/pet/findByStatus', 'get')
+                      let paramValue = apiDef.getOperation('/pet/findByStatus', 'get')
                         .getParameter('status')
                         .getValue({
                           query: {
@@ -1064,10 +1064,10 @@ function runTests(mode) {
             });
 
             describe('boolean', () => {
-              var cParam;
+              let cParam;
 
               before((done) => {
-                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/available'] = {
                   parameters: [
@@ -1116,7 +1116,7 @@ function runTests(mode) {
               });
 
               it('invalid request value', () => {
-                var paramValue = cParam.getValue({
+                let paramValue = cParam.getValue({
                   query: {
                     status: 'invalid',
                   },
@@ -1128,10 +1128,10 @@ function runTests(mode) {
             });
 
             describe('integer', () => {
-              var cParam;
+              let cParam;
 
               before((done) => {
-                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
@@ -1174,7 +1174,7 @@ function runTests(mode) {
               });
 
               it('invalid request value', (done) => {
-                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
@@ -1195,7 +1195,7 @@ function runTests(mode) {
                   definition: cOAIDoc,
                 })
                   .then((apiDef) => {
-                    var paramValue = apiDef
+                    let paramValue = apiDef
                       .getOperation('/pet/{petId}/friends', 'get')
                       .getParameter('limit')
                       .getValue({
@@ -1212,10 +1212,10 @@ function runTests(mode) {
             });
 
             describe('object', () => {
-              var pet = {
+              let pet = {
                 name: 'My Pet',
               };
-              var cParam;
+              let cParam;
 
               before(() => {
                 cParam = apiDefinition.getOperation('/pet', 'post').getParameter('body');
@@ -1234,7 +1234,7 @@ function runTests(mode) {
               });
 
               it('invalid request value (non-string)', () => {
-                var paramValue = cParam.getValue({
+                let paramValue = cParam.getValue({
                   body: 1, // We cannot use string because it would be processed by different logic
                 });
 
@@ -1260,7 +1260,7 @@ function runTests(mode) {
               });
 
               it('invalid request value (string)', () => {
-                var paramValue = cParam.getValue({
+                let paramValue = cParam.getValue({
                   body: 'invalid',
                 });
 
@@ -1287,10 +1287,10 @@ function runTests(mode) {
             });
 
             describe('number', () => {
-              var cParam;
+              let cParam;
 
               before((done) => {
-                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
@@ -1332,7 +1332,7 @@ function runTests(mode) {
                 }).value, 5.5);
               });
               it('invalid request value', (done) => {
-                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                 cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
@@ -1353,7 +1353,7 @@ function runTests(mode) {
                   definition: cOAIDoc,
                 })
                   .then((apiDef) => {
-                    var paramValue = apiDef
+                    let paramValue = apiDef
                       .getOperation('/pet/{petId}/friends', 'get')
                       .getParameter('limit')
                       .getValue({
@@ -1370,7 +1370,7 @@ function runTests(mode) {
             });
 
             describe('string', () => {
-              var cParam;
+              let cParam;
 
               before(() => {
                 cParam = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('name');
@@ -1385,7 +1385,7 @@ function runTests(mode) {
               });
 
               it('invalid request value', () => {
-                var paramValue = cParam.getValue({
+                let paramValue = cParam.getValue({
                   body: {
                     name: 1,
                   },
@@ -1396,13 +1396,13 @@ function runTests(mode) {
               });
 
               describe('date format', () => {
-                var date = new Date('2015-04-09');
-                var validValues = ['2015-04-09', '0000-01-01', '9999-12-31'];
-                var invalidValues = ['invalid', '12345', 'jan 5', '"2015-04-09"',
+                let date = new Date('2015-04-09');
+                let validValues = ['2015-04-09', '0000-01-01', '9999-12-31'];
+                let invalidValues = ['invalid', '12345', 'jan 5', '"2015-04-09"',
                   '2015-00-09', '2015-13-09', '2015-04-00', '2015-04-32', '10000-01-01'];
 
                 before((done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/{petId}'].parameters.push({
                     name: 'createdBefore',
@@ -1422,7 +1422,7 @@ function runTests(mode) {
                 });
 
                 it('date request value', () => {
-                  var paramValue = cParam.getValue({
+                  let paramValue = cParam.getValue({
                     query: {
                       createdBefore: date,
                     },
@@ -1434,7 +1434,7 @@ function runTests(mode) {
 
                 _.each(validValues, (value, index) => {
                   it(`string request value ${index}`, () => {
-                    var paramValue = cParam.getValue({
+                    let paramValue = cParam.getValue({
                       query: {
                         createdBefore: value,
                       },
@@ -1447,7 +1447,7 @@ function runTests(mode) {
 
                 _.each(invalidValues, (value, index) => {
                   it(`invalid request value ${index}`, () => {
-                    var paramValue = cParam.getValue({
+                    let paramValue = cParam.getValue({
                       query: {
                         createdBefore: value,
                       },
@@ -1460,17 +1460,17 @@ function runTests(mode) {
               });
 
               describe('date-time format', () => {
-                var dateTime = new Date('2015-04-09T14:07:26-06:00');
-                var validValues = [
+                let dateTime = new Date('2015-04-09T14:07:26-06:00');
+                let validValues = [
                   '2015-04-09T14:07:26-06:00', '2015-04-09T14:07:26.0182-06:00', '2015-04-09T14:07:26+06:00',
                   '2015-04-09T14:07:26Z', '2001-01-01T00:00:00+00:00', '9999-12-31T23:59:59+23:59'];
-                var invalidValues = ['invalid', '12345', 'jan 5', '"2015-04-09T14:07:26-06:00"',
+                let invalidValues = ['invalid', '12345', 'jan 5', '"2015-04-09T14:07:26-06:00"',
                   '2015-00-09T14:07:26-06:00', '2015-13-09T14:07:26-06:00', '2015-04-00T14:07:26-06:00',
                   '2015-04-32T14:07:26-06:00', '2015-04-09T24:07:26-06:00', '2015-04-09T14:60:26-06:00',
                   '2015-04-09T14:07:61-06:00', '2015-04-09T14:07:26-25:00', '2015-04-09T14:07:26+25:00'];
 
                 before((done) => {
-                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+                  let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                   cOAIDoc.paths['/pet/{petId}'].parameters.push({
                     name: 'createdBefore',
@@ -1490,7 +1490,7 @@ function runTests(mode) {
                 });
 
                 it('date request value', () => {
-                  var paramValue = cParam.getValue({
+                  let paramValue = cParam.getValue({
                     query: {
                       createdBefore: dateTime,
                     },
@@ -1502,7 +1502,7 @@ function runTests(mode) {
 
                 _.each(validValues, (value, index) => {
                   it(`string request value ${index}`, () => {
-                    var paramValue = cParam.getValue({
+                    let paramValue = cParam.getValue({
                       query: {
                         createdBefore: value,
                       },
@@ -1515,7 +1515,7 @@ function runTests(mode) {
 
                 _.each(invalidValues, (value, index) => {
                   it(`invalid request value ${index}`, () => {
-                    var paramValue = cParam.getValue({
+                    let paramValue = cParam.getValue({
                       query: {
                         createdBefore: value,
                       },
@@ -1532,7 +1532,7 @@ function runTests(mode) {
             });
 
             it('invalid type', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet'].post.parameters[0].schema = {
                 type: 'invalid',
@@ -1542,7 +1542,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
+                  let paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
                     body: {},
                   });
 
@@ -1555,7 +1555,7 @@ function runTests(mode) {
             });
 
             it('missing type', (done) => {
-              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               cOAIDoc.paths['/pet'].post.parameters[0].schema = {};
 
@@ -1563,7 +1563,7 @@ function runTests(mode) {
                 definition: cOAIDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
+                  let paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
                     body: {},
                   });
 
@@ -1578,7 +1578,7 @@ function runTests(mode) {
 
       describe('validation', () => {
         it('missing required value (with default)', () => {
-          var paramValue = apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+          let paramValue = apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
             query: {},
           });
 
@@ -1588,10 +1588,10 @@ function runTests(mode) {
         });
 
         it('missing required value (without default)', () => {
-          var paramValue = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
+          let paramValue = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
             query: {},
           });
-          var error = paramValue.error;
+          let error = paramValue.error;
 
           assert.ok(_.isUndefined(paramValue.value));
           assert.ok(paramValue.valid === false);
@@ -1603,7 +1603,7 @@ function runTests(mode) {
         describe('provided empty value', () => {
           describe('integer', () => {
             it('allowEmptyValue false', (done) => {
-              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 allowEmptyValue: false,
@@ -1617,7 +1617,7 @@ function runTests(mode) {
                 definition: coaiDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  let paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: '',
                     },
@@ -1632,7 +1632,7 @@ function runTests(mode) {
             });
 
             it('allowEmptyValue true', (done) => {
-              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'integer',
@@ -1646,7 +1646,7 @@ function runTests(mode) {
                 definition: coaiDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  let paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: '',
                     },
@@ -1662,7 +1662,7 @@ function runTests(mode) {
 
           describe('number', () => {
             it('allowEmptyValue false', (done) => {
-              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 allowEmptyValue: false,
@@ -1676,7 +1676,7 @@ function runTests(mode) {
                 definition: coaiDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  let paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: '',
                     },
@@ -1691,7 +1691,7 @@ function runTests(mode) {
             });
 
             it('allowEmptyValue true', (done) => {
-              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'number',
@@ -1705,7 +1705,7 @@ function runTests(mode) {
                 definition: coaiDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  let paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: '',
                     },
@@ -1721,7 +1721,7 @@ function runTests(mode) {
 
           describe('string', () => {
             it('allowEmptyValue false', (done) => {
-              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 allowEmptyValue: false,
@@ -1734,7 +1734,7 @@ function runTests(mode) {
                 definition: coaiDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  let paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: '',
                     },
@@ -1749,7 +1749,7 @@ function runTests(mode) {
             });
 
             it('allowEmptyValue true', (done) => {
-              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
+              let coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'string',
@@ -1762,7 +1762,7 @@ function runTests(mode) {
                 definition: coaiDoc,
               })
                 .then((apiDef) => {
-                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  let paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: '',
                     },
@@ -1778,11 +1778,11 @@ function runTests(mode) {
         });
 
         it('provided required value', () => {
-          var pet = {
+          let pet = {
             name: 'Sparky',
             photoUrls: [],
           };
-          var paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
+          let paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
             body: pet,
           });
 
@@ -1792,10 +1792,10 @@ function runTests(mode) {
         });
 
         it('provided value fails JSON Schema validation', () => {
-          var paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
+          let paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
             body: {},
           });
-          var error = paramValue.error;
+          let error = paramValue.error;
 
           assert.deepEqual(paramValue.value, {});
           assert.ok(paramValue.valid === false);

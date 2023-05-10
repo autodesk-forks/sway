@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-var _ = require('lodash');
-var assert = require('assert');
-var helpers = require('./helpers');
+let _ = require('lodash');
+let assert = require('assert');
+let helpers = require('./helpers');
 
-var Sway = helpers.getSway();
+let Sway = helpers.getSway();
 
 // TODO: Move these to their respective test-*.js files
 
 describe('issues', () => {
-  var apiDefinition;
+  let apiDefinition;
 
   before((done) => {
     helpers.getApiDefinition((apiDef) => {
@@ -44,7 +44,7 @@ describe('issues', () => {
   });
 
   it('should trap document processing errors (Issue 16)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/{petId}'].get = null;
 
@@ -55,7 +55,7 @@ describe('issues', () => {
         helpers.shouldHadFailed();
       })
       .catch((err) => {
-        var errorMessages = [
+        let errorMessages = [
           'Cannot read properties of null (reading \'consumes\')', // Node.js > 14
           'Cannot read property \'consumes\' of null', // Node.js < 14
           'null is not an object (evaluating \'definitionFullyResolved.consumes\')', // PhantomJS (browser)
@@ -84,7 +84,7 @@ describe('issues', () => {
   });
 
   it('should not throw an error for unknown formats (Issue 20)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.definitions.Pet.properties.name.format = 'unknown';
 
@@ -98,7 +98,7 @@ describe('issues', () => {
   });
 
   it('should handle default and id fields (Issue 29)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.definitions.Pet.properties.default = { type: 'string' };
 
@@ -112,7 +112,7 @@ describe('issues', () => {
   });
 
   it('should handle request objects that are not plain objects (Issue 35)', () => {
-    var mockReq = new Object(); // eslint-disable-line no-new-object
+    let mockReq = new Object(); // eslint-disable-line no-new-object
 
     mockReq.url = '/pet/1';
 
@@ -124,11 +124,11 @@ describe('issues', () => {
   });
 
   it('should validate file parameters based on existence alone (Issue 37)', () => {
-    var mockFile = {
+    let mockFile = {
       originalname: 'swagger.yaml',
       mimetype: 'application/x-yaml',
     };
-    var paramValue = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
+    let paramValue = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
       url: '/pet/1/uploadImage',
       files: {
         file: mockFile,
@@ -142,7 +142,7 @@ describe('issues', () => {
   });
 
   it('should handle allOf $ref to a definition with circular reference (Issue 38)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.definitions.A = {
       allOf: [
@@ -183,7 +183,7 @@ describe('issues', () => {
   });
 
   it('string value for object type (Issue #46)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/user/login'].get.responses['200'].schema = {
       properties: {
@@ -198,7 +198,7 @@ describe('issues', () => {
       definition: cOAIDoc,
     })
       .then((apiDef) => {
-        var results;
+        let results;
 
         results = apiDef.getOperation('/user/login', 'get').validateResponse({
           body: 'If-Match header required',
@@ -233,7 +233,7 @@ describe('issues', () => {
   });
 
   it('Buffer value for object type (Issue #46)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/user/login'].get.responses['200'].schema = {
       properties: {
@@ -248,9 +248,9 @@ describe('issues', () => {
       definition: cOAIDoc,
     })
       .then((apiDef) => {
-        var rawValue = 'If-Match header required';
-        var results;
-        var value;
+        let rawValue = 'If-Match header required';
+        let results;
+        let value;
 
         // Browsers do not have a 'Buffer' type so we basically skip this test
         if (typeof window === 'undefined') {
@@ -292,7 +292,7 @@ describe('issues', () => {
   });
 
   it('should handle hierchical query parameters (Issue 39)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'page[limit]',
@@ -311,7 +311,7 @@ describe('issues', () => {
       definition: cOAIDoc,
     })
       .then((apiDef) => {
-        var req = {
+        let req = {
           query: {
             page: {
               limit: '100',
@@ -321,10 +321,10 @@ describe('issues', () => {
             },
           },
         };
-        var pageLimitParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[limit]');
-        var pageLimitParamValue = pageLimitParam.getValue(req);
-        var pageOffsetParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[nested][offset]');
-        var pageOffsetParamValue = pageOffsetParam.getValue(req);
+        let pageLimitParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[limit]');
+        let pageLimitParamValue = pageLimitParam.getValue(req);
+        let pageOffsetParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[nested][offset]');
+        let pageOffsetParamValue = pageOffsetParam.getValue(req);
 
         assert.equal(pageLimitParamValue.raw, req.query.page.limit);
         assert.equal(pageLimitParamValue.value, 100);
@@ -336,7 +336,7 @@ describe('issues', () => {
   });
 
   it('should not validate optional parameters that are undefined (Issue 60)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'alive',
@@ -360,7 +360,7 @@ describe('issues', () => {
   });
 
   it('should not throw an error for optional strings that are undefined (Issue 60)', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'nickname',
@@ -385,7 +385,7 @@ describe('issues', () => {
 
   describe('should handle mixed-case headers for validation (Issue 67)', () => {
     it('parameter processing', () => {
-      var parameterValue = apiDefinition.getOperation('/pet/{petId}', 'DELETE').getParameter('api_key').getValue({
+      let parameterValue = apiDefinition.getOperation('/pet/{petId}', 'DELETE').getParameter('api_key').getValue({
         headers: {
           ApI_KeY: 'Testing',
         },
@@ -395,7 +395,7 @@ describe('issues', () => {
     });
 
     it('request validation', () => {
-      var results = apiDefinition.getOperation('/pet', 'POST').validateRequest({
+      let results = apiDefinition.getOperation('/pet', 'POST').validateRequest({
         url: '/pet',
         body: {
           name: 'Test Pet',
@@ -411,7 +411,7 @@ describe('issues', () => {
     });
 
     it('response validation', () => {
-      var results = apiDefinition.getOperation('/pet/findByStatus', 'GET').validateResponse({
+      let results = apiDefinition.getOperation('/pet/findByStatus', 'GET').validateResponse({
         headers: {
           'CoNtEnT-TyPe': 'application/json',
         },
@@ -430,7 +430,7 @@ describe('issues', () => {
   });
 
   describe('should handle circular documents and inputs', () => {
-    var apiDefinitionCircular;
+    let apiDefinitionCircular;
 
     before((done) => {
       helpers.getApiDefinitionCircular((apiDef) => {
@@ -441,8 +441,8 @@ describe('issues', () => {
     });
 
     it('ApiDefinition#validate', () => {
-      var circularDef = apiDefinitionCircular.definitionFullyResolved.definitions.CircularReference;
-      var results = apiDefinitionCircular.validate();
+      let circularDef = apiDefinitionCircular.definitionFullyResolved.definitions.CircularReference;
+      let results = apiDefinitionCircular.validate();
 
       assert.equal(results.warnings.length, 0);
       assert.equal(results.errors.length, 0);

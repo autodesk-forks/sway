@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-var _ = require('lodash');
-var assert = require('assert');
-var helpers = require('./helpers');
+let _ = require('lodash');
+let assert = require('assert');
+let helpers = require('./helpers');
 
-var Sway = helpers.getSway();
+let Sway = helpers.getSway();
 
 function runTests(mode) {
-  var label = mode === 'with-refs' ? 'with' : 'without';
-  var apiDefinition;
+  let label = mode === 'with-refs' ? 'with' : 'without';
+  let apiDefinition;
 
   before((done) => {
     function callback(apiDef) {
@@ -50,11 +50,11 @@ function runTests(mode) {
 
   describe(`should handle OpenAPI document ${label} relative references`, () => {
     it('should handle composite parameters', () => {
-      var method = 'post';
-      var path = '/pet/{petId}';
+      let method = 'post';
+      let path = '/pet/{petId}';
 
-      var operation = apiDefinition.getOperation(path, method);
-      var pathDef = apiDefinition.definitionFullyResolved.paths['/pet/{petId}'];
+      let operation = apiDefinition.getOperation(path, method);
+      let pathDef = apiDefinition.definitionFullyResolved.paths['/pet/{petId}'];
 
       assert.equal(operation.pathObject.path, path);
       assert.equal(operation.method, method);
@@ -68,11 +68,11 @@ function runTests(mode) {
     });
 
     it('should handle explicit parameters', () => {
-      var method = 'post';
-      var path = '/pet/{petId}/uploadImage';
-      var operation = apiDefinition.getOperation(path, method);
-      var pathDef = apiDefinition.definitionRemotesResolved.paths[path];
-      var pathDefFullyResolved = apiDefinition.definitionFullyResolved.paths[path];
+      let method = 'post';
+      let path = '/pet/{petId}/uploadImage';
+      let operation = apiDefinition.getOperation(path, method);
+      let pathDef = apiDefinition.definitionRemotesResolved.paths[path];
+      let pathDefFullyResolved = apiDefinition.definitionFullyResolved.paths[path];
 
       assert.equal(operation.pathObject.path, path);
       assert.equal(operation.method, method);
@@ -110,9 +110,9 @@ function runTests(mode) {
     });
 
     it('should take global security definitions', () => {
-      var method = 'post';
-      var path = '/pet/{petId}/uploadImage';
-      var operation = apiDefinition.getOperation(path, method);
+      let method = 'post';
+      let path = '/pet/{petId}/uploadImage';
+      let operation = apiDefinition.getOperation(path, method);
 
       assert.ok(typeof operation.securityDefinitions !== 'undefined', 'Should define securityDefinitions');
       assert.ok(typeof operation.securityDefinitions.petstore_auth !== 'undefined', 'Should take \'petstore_auth\' from global security');
@@ -128,8 +128,8 @@ function runTests(mode) {
     });
 
     function validateRegExps(api, basePath) {
-      var createPet = api.getOperation('/pet', 'post');
-      var updatePet = api.getOperation('/pet/{petId}', 'post');
+      let createPet = api.getOperation('/pet', 'post');
+      let updatePet = api.getOperation('/pet/{petId}', 'post');
 
       // Make sure they are of the proper type
       assert.ok(createPet.pathObject.regexp instanceof RegExp);
@@ -152,7 +152,7 @@ function runTests(mode) {
     });
 
     it('should create proper regexp (with basePath ending in slash)', (done) => {
-      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+      let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.basePath = '/';
 
@@ -164,7 +164,7 @@ function runTests(mode) {
     });
 
     it('should create proper regexp (without basePath)', (done) => {
-      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+      let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       delete cOAIDoc.basePath;
 
@@ -177,7 +177,7 @@ function runTests(mode) {
 
     describe('#getParameter', () => {
       it('should return the proper response', (done) => {
-        var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+        let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
         cOAIDoc.paths['/pet/{petId}'].get.parameters = [
           {
@@ -190,7 +190,7 @@ function runTests(mode) {
 
         Sway.create({ definition: cOAIDoc })
           .then((apiDef) => {
-            var operation = apiDef.getOperation('/pet/{petId}', 'get');
+            let operation = apiDef.getOperation('/pet/{petId}', 'get');
 
             assert.ok(_.isUndefined(operation.getParameter()));
             assert.ok(_.isUndefined(operation.getParameter('missing')));
@@ -211,7 +211,7 @@ function runTests(mode) {
     // More vigorous testing of the Parameter object itself and the parameter composition are done elsewhere
     describe('#getParameters', () => {
       it('should return the proper parameter objects', () => {
-        var operation = apiDefinition.getOperation('/pet/{petId}', 'post');
+        let operation = apiDefinition.getOperation('/pet/{petId}', 'post');
 
         assert.deepEqual(operation.getParameters(), operation.parameterObjects);
       });
@@ -219,8 +219,8 @@ function runTests(mode) {
 
     describe('#getSecurity', () => {
       it('should return the proper parameter objects', () => {
-        var op1 = apiDefinition.getOperation('/pet/{petId}', 'post');
-        var op2 = apiDefinition.getOperation('/store/inventory', 'get');
+        let op1 = apiDefinition.getOperation('/pet/{petId}', 'post');
+        let op2 = apiDefinition.getOperation('/store/inventory', 'get');
 
         assert.notDeepEqual(op1.getSecurity, op1.security);
         assert.deepEqual(op1.getSecurity(), apiDefinition.definition.security);
@@ -231,7 +231,7 @@ function runTests(mode) {
 
     describe('#validateRequest', () => {
       it('should throw TypeError for invalid arguments', () => {
-        var scenarios = [
+        let scenarios = [
           [[], 'req is required'],
           [[true], 'req must be an object'],
           [[{}, 'test'], 'options must be an object'],
@@ -242,7 +242,7 @@ function runTests(mode) {
           [[{}, { strictMode: { header: 'test' } }], 'options.strictMode.header must be a boolean'],
           [[{}, { strictMode: { query: 'test' } }], 'options.strictMode.query must be a boolean'],
         ];
-        var operation = apiDefinition.getOperation('/pet', 'post');
+        let operation = apiDefinition.getOperation('/pet', 'post');
 
         _.forEach(scenarios, (scenario) => {
           try {
@@ -256,7 +256,7 @@ function runTests(mode) {
       });
 
       describe('validate Content-Type', () => {
-        var baseRequest = {
+        let baseRequest = {
           url: '/pet',
           body: {
             name: 'Test Pet',
@@ -265,7 +265,7 @@ function runTests(mode) {
         };
 
         describe('operation level consumes - ignore when empty', () => {
-          var operation;
+          let operation;
 
           before(() => {
             // this path+op doesn't specify 'consumes'
@@ -273,7 +273,7 @@ function runTests(mode) {
           });
 
           it('should not return an unsupported content-type error', () => {
-            var request = {
+            let request = {
               url: '/pet/findByStatus',
               query: {
                 status: 'sold',
@@ -282,7 +282,7 @@ function runTests(mode) {
                 'content-type': 'application/json', // extraneous content-type header
               },
             };
-            var results = operation.validateRequest(request);
+            let results = operation.validateRequest(request);
 
             assert.equal(results.warnings.length, 0);
             assert.equal(results.errors.length, 0);
@@ -290,15 +290,15 @@ function runTests(mode) {
         });
 
         describe('operation level consumes', () => {
-          var operation;
+          let operation;
 
           before(() => {
             operation = apiDefinition.getOperation('/pet', 'post');
           });
 
           it('should return an error for an unsupported value', () => {
-            var request = _.cloneDeep(baseRequest);
-            var results;
+            let request = _.cloneDeep(baseRequest);
+            let results;
 
             request.headers = {
               'content-type': 'application/x-yaml',
@@ -311,8 +311,8 @@ function runTests(mode) {
           });
 
           it('should handle an undefined value (defaults to application/octet-stream)', () => {
-            var request = _.cloneDeep(baseRequest);
-            var results;
+            let request = _.cloneDeep(baseRequest);
+            let results;
 
             request.headers = {};
 
@@ -330,8 +330,8 @@ function runTests(mode) {
           });
 
           it('should not return an error for a supported value', () => {
-            var request = _.cloneDeep(baseRequest);
-            var results;
+            let request = _.cloneDeep(baseRequest);
+            let results;
 
             request.headers = {
               'content-type': 'application/json',
@@ -347,7 +347,7 @@ function runTests(mode) {
         // We only need one test to make sure that we're using the global consumes
 
         it('should handle global level consumes', (done) => {
-          var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+          let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
           cOAIDoc.consumes = cOAIDoc.paths['/pet'].post.consumes;
 
@@ -357,9 +357,9 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              var operation = apiDef.getOperation('/pet', 'post');
-              var request = _.cloneDeep(baseRequest);
-              var results;
+              let operation = apiDef.getOperation('/pet', 'post');
+              let request = _.cloneDeep(baseRequest);
+              let results;
 
               request.headers = {
                 'content-type': 'application/x-yaml',
@@ -381,8 +381,8 @@ function runTests(mode) {
         });
 
         it('should handle mime-type parameters (exact match)', (done) => {
-          var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
-          var mimeType = 'application/x-yaml; charset=utf-8';
+          let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+          let mimeType = 'application/x-yaml; charset=utf-8';
 
           cOAIDoc.paths['/pet'].post.consumes.push(mimeType);
 
@@ -390,8 +390,8 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              var request = _.cloneDeep(baseRequest);
-              var results;
+              let request = _.cloneDeep(baseRequest);
+              let results;
 
               request.headers = {
                 'content-type': mimeType,
@@ -406,7 +406,7 @@ function runTests(mode) {
         });
 
         it('should not return an INVALID_CONENT_TYPE error for empty body (Issue 164)', (done) => {
-          var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+          let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
           cOAIDoc.paths['/user'].post.parameters[0].required = false;
           cOAIDoc.paths['/user'].post.consumes = ['application/json'];
@@ -415,7 +415,7 @@ function runTests(mode) {
             definition: cOAIDoc,
           })
             .then((apiDef) => {
-              var results = apiDef.getOperation('/user', 'post').validateRequest({});
+              let results = apiDef.getOperation('/user', 'post').validateRequest({});
 
               assert.equal(results.warnings.length, 0);
               assert.equal(results.errors.length, 0);
@@ -429,8 +429,8 @@ function runTests(mode) {
         // ParameterValue's validation and which is heavily tested elsewhere.
 
         it('should return an error for invalid non-primitive parameters', () => {
-          var operation = apiDefinition.getOperation('/pet', 'post');
-          var results = operation.validateRequest({
+          let operation = apiDefinition.getOperation('/pet', 'post');
+          let results = operation.validateRequest({
             url: '/v2/pet',
             headers: {
               'content-type': 'application/json',
@@ -466,8 +466,8 @@ function runTests(mode) {
         });
 
         it('should return an error for invalid primitive parameters', () => {
-          var operation = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post');
-          var results = operation.validateRequest({
+          let operation = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post');
+          let results = operation.validateRequest({
             url: '/v2/pet/notANumber/uploadImage',
             headers: {
               'content-type': 'multipart/form-data',
@@ -498,8 +498,8 @@ function runTests(mode) {
         });
 
         it('should not return an error for valid parameters', () => {
-          var operation = apiDefinition.getOperation('/pet/{petId}', 'post');
-          var results = operation.validateRequest({
+          let operation = apiDefinition.getOperation('/pet/{petId}', 'post');
+          let results = operation.validateRequest({
             url: '/v2/pet/1',
             headers: {
               'content-type': 'application/x-www-form-urlencoded',
@@ -516,7 +516,7 @@ function runTests(mode) {
       });
 
       it('should validate strict mode', () => {
-        var invalidRequest = {
+        let invalidRequest = {
           body: {
             extra: 'extra',
             name: 'Pet 1',
@@ -529,7 +529,7 @@ function runTests(mode) {
           },
           url: '/v2/pet/1',
         };
-        var scenarios = [
+        let scenarios = [
           [[], []],
           [[{
             strictMode: false,
@@ -558,17 +558,17 @@ function runTests(mode) {
             },
           }], ['header']],
         ];
-        var operation = apiDefinition.getOperation('/pet/{petId}', 'post');
+        let operation = apiDefinition.getOperation('/pet/{petId}', 'post');
 
         _.forEach(scenarios, (scenario) => {
-          var results = operation.validateRequest.apply(operation, [invalidRequest].concat(scenario[0]));
+          let results = operation.validateRequest.apply(operation, [invalidRequest].concat(scenario[0]));
 
           assert.equal(results.warnings.length, 0);
           assert.equal(results.errors.length, scenario[1].length);
 
           _.forEach(scenario[1], (location) => {
-            var codeSuffix = location.toUpperCase();
-            var name = 'extra';
+            let codeSuffix = location.toUpperCase();
+            let name = 'extra';
 
             switch (location) {
               case 'formData':
@@ -595,18 +595,18 @@ function runTests(mode) {
       });
 
       it('should process custom validators', () => {
-        var error = {
+        let error = {
           code: 'FAKE_ERROR',
           message: 'This is a fake error!',
           path: [],
         };
-        var operation = apiDefinition.getOperation('/pet/findByStatus', 'get');
-        var req = {
+        let operation = apiDefinition.getOperation('/pet/findByStatus', 'get');
+        let req = {
           query: {
             status: 'sold',
           },
         };
-        var warning = {
+        let warning = {
           code: 'FAKE_WARNING',
           message: 'This is a fake warning!',
           path: [],
@@ -646,10 +646,10 @@ function runTests(mode) {
 
     describe('#validateResponse', () => {
       it('should throw TypeError for invalid arguments', () => {
-        var res = {
+        let res = {
           statusCode: 200,
         };
-        var scenarios = [
+        let scenarios = [
           [[], 'res is required'],
           [[true], 'res must be an object'],
           [[res, 'test'], 'options must be an object'],
@@ -660,7 +660,7 @@ function runTests(mode) {
           [[res, { strictMode: { header: 'test' } }], 'options.strictMode.header must be a boolean'],
           [[res, { strictMode: { query: 'test' } }], 'options.strictMode.query must be a boolean'],
         ];
-        var operation = apiDefinition.getOperation('/pet/findByStatus', 'get');
+        let operation = apiDefinition.getOperation('/pet/findByStatus', 'get');
 
         _.forEach(scenarios, (scenario) => {
           try {
@@ -674,7 +674,7 @@ function runTests(mode) {
       });
 
       it('should not return an INVALID_CONENT_TYPE error for empty body (Issue 164)', (done) => {
-        var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+        let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
         cOAIDoc.paths['/user'].post.produces = ['application/xml'];
         cOAIDoc.paths['/user'].post.responses.default.schema = {
@@ -685,7 +685,7 @@ function runTests(mode) {
           definition: cOAIDoc,
         })
           .then((apiDef) => {
-            var results = apiDef.getOperation('/user', 'post').validateResponse({
+            let results = apiDef.getOperation('/user', 'post').validateResponse({
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -714,7 +714,7 @@ function runTests(mode) {
       // We only test that Operation#validateResponse handles missing responses because the testing of the remainder
       // is in test-response.js.
       it('should return an error for undefined response', () => {
-        var results = apiDefinition.getOperation('/pet/{petId}', 'post').validateResponse({
+        let results = apiDefinition.getOperation('/pet/{petId}', 'post').validateResponse({
           statusCode: 201,
         });
 
@@ -729,7 +729,7 @@ function runTests(mode) {
       });
 
       it('should use the \'default\' response for undefined response status code', () => {
-        var results = apiDefinition.getOperation('/user', 'post').validateResponse({
+        let results = apiDefinition.getOperation('/user', 'post').validateResponse({
           statusCode: 201,
         });
 
@@ -738,12 +738,12 @@ function runTests(mode) {
       });
 
       it('should process custom validators', () => {
-        var error = {
+        let error = {
           code: 'FAKE_ERROR',
           message: 'This is a fake error!',
           path: [],
         };
-        var res = {
+        let res = {
           body: [
             {
               name: 'Test Pet',
@@ -754,8 +754,8 @@ function runTests(mode) {
             'Content-Type': 'application/json',
           },
         };
-        var resObj = apiDefinition.getOperation('/pet/findByStatus', 'get').getResponse(200);
-        var warning = {
+        let resObj = apiDefinition.getOperation('/pet/findByStatus', 'get').getResponse(200);
+        let warning = {
           code: 'FAKE_WARNING',
           message: 'This is a fake warning!',
           path: [],
@@ -794,7 +794,7 @@ function runTests(mode) {
     });
 
     it('should validate strict mode', (done) => {
-      var invalidRequest = {
+      let invalidRequest = {
         body: {
           extra: 'extra',
           name: 'Pet 1',
@@ -808,7 +808,7 @@ function runTests(mode) {
         },
         url: '/v2/pet/1',
       };
-      var scenarios = [
+      let scenarios = [
         [[], []],
         [[{
           strictMode: false,
@@ -839,7 +839,7 @@ function runTests(mode) {
           },
         }], ['header']],
       ];
-      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+      let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.paths['/pet/{petId}'].post.responses.default = {
         description: 'successful operation',
@@ -851,8 +851,8 @@ function runTests(mode) {
       Sway.create({ definition: cOAIDoc })
         .then((apiDef) => {
           _.forEach(scenarios, (scenario) => {
-            var operation = apiDef.getOperation('/pet/{petId}', 'post');
-            var results = operation.validateResponse.apply(operation, [invalidRequest].concat(scenario[0]));
+            let operation = apiDef.getOperation('/pet/{petId}', 'post');
+            let results = operation.validateResponse.apply(operation, [invalidRequest].concat(scenario[0]));
 
             assert.equal(results.warnings.length, 0);
             assert.equal(results.errors.length, scenario[1].length);

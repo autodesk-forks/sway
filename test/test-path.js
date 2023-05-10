@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-var _ = require('lodash');
-var assert = require('assert');
-var tHelpers = require('./helpers');
-var JsonRefs = require('json-refs');
+let _ = require('lodash');
+let assert = require('assert');
+let tHelpers = require('./helpers');
+let JsonRefs = require('json-refs');
 
-var Sway = tHelpers.getSway();
+let Sway = tHelpers.getSway();
 
 function runTests(mode) {
-  var label = mode === 'with-refs' ? 'with' : 'without';
-  var apiDefinition;
+  let label = mode === 'with-refs' ? 'with' : 'without';
+  let apiDefinition;
 
   before((done) => {
     function callback(apiDef) {
@@ -51,8 +51,8 @@ function runTests(mode) {
 
   describe(`should handle OpenAPI document ${label} relative references`, () => {
     it('should have proper structure', () => {
-      var path = '/pet/{petId}';
-      var pathObject = apiDefinition.getOperation(path, 'get').pathObject;
+      let path = '/pet/{petId}';
+      let pathObject = apiDefinition.getOperation(path, 'get').pathObject;
 
       assert.deepEqual(pathObject.apiDefinition, apiDefinition);
       assert.equal(pathObject.path, path);
@@ -92,8 +92,8 @@ function runTests(mode) {
       });
 
       it('should return no operations', (done) => {
-        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-        var path = '/petz';
+        let cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        let path = '/petz';
 
         cOAIDoc.paths[path] = {};
 
@@ -117,7 +117,7 @@ function runTests(mode) {
 
     describe('#getParameters', () => {
       it('should return the expected parameters', () => {
-        var parameters = apiDefinition.getPath('/pet/{petId}').getParameters();
+        let parameters = apiDefinition.getPath('/pet/{petId}').getParameters();
 
         assert.equal(parameters.length, 1);
       });

@@ -24,34 +24,34 @@
  * THE SOFTWARE.
  */
 
-var assert = require('assert');
-var fs = require('fs');
-var helpers = require('../lib/helpers');
-var path = require('path');
-var Sway = require('..');
-var YAML = require('js-yaml');
+let assert = require('assert');
+let fs = require('fs');
+let helpers = require('../lib/helpers');
+let path = require('path');
+let Sway = require('..');
+let YAML = require('js-yaml');
 
-var documentBase = path.join(__dirname, 'browser', 'documents');
-var relativeBase = typeof window === 'undefined' ? documentBase : 'base/browser/documents';
-var oaiDoc = YAML.load(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
-var oaiDocCircular = YAML.load(fs.readFileSync(
+let documentBase = path.join(__dirname, 'browser', 'documents');
+let relativeBase = typeof window === 'undefined' ? documentBase : 'base/browser/documents';
+let oaiDoc = YAML.load(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
+let oaiDocCircular = YAML.load(fs.readFileSync(
   path.join(
     __dirname,
     './browser/documents/2.0/swagger-circular.yaml',
   ),
   'utf8',
 ));
-var oaiDocRelativeRefs = YAML.load(fs.readFileSync(
+let oaiDocRelativeRefs = YAML.load(fs.readFileSync(
   path.join(
     __dirname,
     './browser/documents/2.0/swagger-relative-refs.yaml',
   ),
   'utf8',
 ));
-var oaiDocValidator = helpers.getJSONSchemaValidator();
-var apiDefinition;
-var apiDefinitionCircular;
-var apiDefinitionRelativeRefs;
+let oaiDocValidator = helpers.getJSONSchemaValidator();
+let apiDefinition;
+let apiDefinitionCircular;
+let apiDefinitionRelativeRefs;
 
 function fail(msg) {
   assert.fail(msg);

@@ -22,11 +22,11 @@
  * THE SOFTWARE.
  */
 
-var _ = require('lodash');
-var helpers = require('./lib/helpers');
-var JsonRefs = require('json-refs');
-var ApiDefinition = require('./lib/types/api-definition');
-var YAML = require('js-yaml');
+let _ = require('lodash');
+let helpers = require('./lib/helpers');
+let JsonRefs = require('json-refs');
+let ApiDefinition = require('./lib/types/api-definition');
+let YAML = require('js-yaml');
 require('native-promise-only'); // Load promises polyfill if necessary
 
 /**
@@ -53,8 +53,8 @@ require('native-promise-only'); // Load promises polyfill if necessary
  * });
  */
 module.exports.create = function (options) {
-  var allTasks = Promise.resolve();
-  var cOptions;
+  let allTasks = Promise.resolve();
+  let cOptions;
 
   // Validate arguments
   allTasks = allTasks.then(() => new Promise((resolve) => {

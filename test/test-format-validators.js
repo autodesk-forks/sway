@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-var _ = require('lodash');
-var assert = require('assert');
-var helpers = require('./helpers');
+let _ = require('lodash');
+let assert = require('assert');
+let helpers = require('./helpers');
 
-var Sway = helpers.getSway();
+let Sway = helpers.getSway();
 
 describe('format validators', () => {
   it('always truthy', (done) => {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
@@ -74,11 +74,11 @@ describe('format validators', () => {
   });
 
   describe('int32', () => {
-    var badParamValue;
-    var goodParamValue;
+    let badParamValue;
+    let goodParamValue;
 
     before((done) => {
-      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+      let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int32',
@@ -105,7 +105,7 @@ describe('format validators', () => {
     });
 
     it('bad value', () => {
-      var error = badParamValue.error;
+      let error = badParamValue.error;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));
@@ -138,11 +138,11 @@ describe('format validators', () => {
   });
 
   describe('int64', () => {
-    var badParamValue;
-    var goodParamValue;
+    let badParamValue;
+    let goodParamValue;
 
     before((done) => {
-      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+      let cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int64',
@@ -169,7 +169,7 @@ describe('format validators', () => {
     });
 
     it('bad value', () => {
-      var error = badParamValue.error;
+      let error = badParamValue.error;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));
