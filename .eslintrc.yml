@@ -36,5 +36,4 @@ rules:
   vars-on-top: off
   global-require: off
   no-unreachable: off
-  import/no-unresolved: off
   # END

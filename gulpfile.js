@@ -31,6 +31,7 @@ const webpackConfig = require('./webpack.config');
 const run = require('gulp-run-command').default;
 const jsdoc2md = require('jsdoc-to-markdown');
 const fs = require('fs');
+// eslint-disable-next-line import/no-unresolved
 const gulpESLintNew = require('gulp-eslint-new');
 
 // Load promises polyfill if necessary
