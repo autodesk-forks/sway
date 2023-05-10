@@ -33,5 +33,4 @@ rules:
   prefer-destructuring: off
   no-mixed-operators: off
   no-var: off
-  vars-on-top: off
   # END
