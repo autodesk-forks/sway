@@ -246,7 +246,7 @@ function runTests(mode) {
 
         _.forEach(scenarios, (scenario) => {
           try {
-            operation.validateRequest.apply(operation, scenario[0]);
+            operation.validateRequest(...scenario[0]);
 
             helpers.shouldHadFailed();
           } catch (err) {
@@ -546,7 +546,7 @@ function runTests(mode) {
         const operation = apiDefinition.getOperation('/pet/{petId}', 'post');
 
         _.forEach(scenarios, (scenario) => {
-          const results = operation.validateRequest.apply(operation, [invalidRequest].concat(scenario[0]));
+          const results = operation.validateRequest(...[invalidRequest].concat(scenario[0]));
 
           assert.equal(results.warnings.length, 0);
           assert.equal(results.errors.length, scenario[1].length);
@@ -630,7 +630,7 @@ function runTests(mode) {
     });
 
     describe('#validateResponse', () => {
-      it( 'should throw TypeError for invalid arguments', () => {
+      it('should throw TypeError for invalid arguments', () => {
         const res = {
           statusCode: 200,
         };
@@ -649,7 +649,7 @@ function runTests(mode) {
 
         _.forEach(scenarios, (scenario) => {
           try {
-            operation.validateResponse.apply(operation, scenario[0]);
+            operation.validateResponse(...scenario[0]);
 
             helpers.shouldHadFailed();
           } catch (err) {
@@ -837,7 +837,7 @@ function runTests(mode) {
         .then((apiDef) => {
           _.forEach(scenarios, (scenario) => {
             const operation = apiDef.getOperation('/pet/{petId}', 'post');
-            const results = operation.validateResponse.apply(operation, [invalidRequest].concat(scenario[0]));
+            const results = operation.validateResponse(...[invalidRequest].concat(scenario[0]));
 
             assert.equal(results.warnings.length, 0);
             assert.equal(results.errors.length, scenario[1].length);

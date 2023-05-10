@@ -220,7 +220,7 @@ function runTests(mode) {
 
         _.forEach(scenarios, (scenario) => {
           try {
-            param.getValue.apply(param, scenario[0]);
+            param.getValue(...scenario[0]);
 
             tHelpers.shouldHadFailed();
           } catch (err) {

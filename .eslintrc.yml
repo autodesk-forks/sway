@@ -24,5 +24,4 @@ rules:
   no-underscore-dangle: off
   no-loop-func: off
   no-use-before-define: off
-  prefer-spread: off
   # END

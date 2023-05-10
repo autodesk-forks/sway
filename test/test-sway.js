@@ -91,7 +91,7 @@ describe('sway', () => {
       _.each(invalidCreateScenarios, (scenario, index) => {
         allTests = allTests
           .then(() => new Promise((resolve, reject) => {
-            Sway.create.apply(Sway, scenario[0])
+            Sway.create(...scenario[0])
               .then(() => {
                 reject(new Error(`Sway#create should had failed (Test #${index})`));
               }, (err) => {

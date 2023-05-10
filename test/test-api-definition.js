@@ -361,7 +361,7 @@ function runTests(mode) {
 
         _.forEach(scenarios, (scenario) => {
           try {
-            apiDefinition.registerFormat.apply(apiDefinition, scenario[0]);
+            apiDefinition.registerFormat(...scenario[0]);
 
             tHelpers.shouldHadFailed();
           } catch (err) {
@@ -430,7 +430,7 @@ function runTests(mode) {
 
         _.forEach(scenarios, (scenario) => {
           try {
-            apiDefinition.registerFormatGenerator.apply(apiDefinition, scenario[0]);
+            apiDefinition.registerFormatGenerator(...scenario[0]);
 
             tHelpers.shouldHadFailed();
           } catch (err) {
@@ -476,7 +476,7 @@ function runTests(mode) {
 
         _.forEach(scenarios, (scenario) => {
           try {
-            apiDefinition.registerValidator.apply(apiDefinition, scenario[0]);
+            apiDefinition.registerValidator(...scenario[0]);
 
             tHelpers.shouldHadFailed();
           } catch (err) {
