@@ -28,5 +28,4 @@ rules:
   prefer-const: off
   no-buffer-constructor: off
   import/order: off
-  no-shadow: off
   # END

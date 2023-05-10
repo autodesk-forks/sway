@@ -802,28 +802,28 @@ function runTests(mode) {
               // if only one is passed to the query param.
               Sway.create({ definition: coaiDoc })
                 .then((apiDef) => {
-                  let parameter = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('versions');
+                  let versionsParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('versions');
 
                   // Test a string value that JSON.parse would coerse to Number
-                  singleNumParamValue = parameter.getValue({
+                  singleNumParamValue = versionsParam.getValue({
                     query: {
                       versions: '1.1',
                     },
                   });
                   // Test a string value that JSON.parse would coerse to Number
-                  singleStrBooleanLikeValue = parameter.getValue({
+                  singleStrBooleanLikeValue = versionsParam.getValue({
                     query: {
                       versions: 'true',
                     },
                   });
                   // Test a string value
-                  singleStrParamValue = parameter.getValue({
+                  singleStrParamValue = versionsParam.getValue({
                     query: {
                       versions: '1.1#rc',
                     },
                   });
                   // Test an array value
-                  multipleParamValue = parameter.getValue({
+                  multipleParamValue = versionsParam.getValue({
                     query: {
                       versions: ['1.0', '1.1#rc'],
                     },
