@@ -9,6 +9,7 @@ overrides:
       - "test/*.js"
     rules:
       func-names: off
+      no-console: off
 parserOptions:
   ecmaVersion: latest
 rules:
@@ -18,7 +19,6 @@ rules:
     - 200
 
   # TODO: remove after alignment effort with the original package
-  no-console: off
   no-param-reassign: off
   no-loop-func: off
   # END
