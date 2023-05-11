@@ -52,7 +52,7 @@ require('native-promise-only'); // Load promises polyfill if necessary
  *   console.error(err.stack);
  * });
  */
-module.exports.create = function (options) {
+function create(options) {
   let allTasks = Promise.resolve();
 
   // Validate arguments
@@ -106,7 +106,7 @@ module.exports.create = function (options) {
       }
 
       if (_.isUndefined(cOptions.jsonRefs.loaderOptions.processContent)) {
-        cOptions.jsonRefs.loaderOptions.processContent = function (res, cb) {
+        cOptions.jsonRefs.loaderOptions.processContent = (res, cb) => {
           cb(undefined, YAML.load(res.text));
         };
       }
@@ -159,4 +159,6 @@ module.exports.create = function (options) {
     });
 
   return allTasks;
-};
+}
+
+module.exports.create = create;

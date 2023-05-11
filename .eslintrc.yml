@@ -12,6 +12,7 @@ overrides:
 parserOptions:
   ecmaVersion: latest
 rules:
+  no-underscore-dangle: off # internal package _debug function
   max-len:
     - 1
     - 200
@@ -20,7 +21,5 @@ rules:
   no-console: off
   no-param-reassign: off
   no-multi-assign: off
-  func-names: off
-  no-underscore-dangle: off
   no-loop-func: off
   # END
