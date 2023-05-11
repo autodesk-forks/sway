@@ -20,6 +20,5 @@ rules:
   # TODO: remove after alignment effort with the original package
   no-console: off
   no-param-reassign: off
-  no-multi-assign: off
   no-loop-func: off
   # END
