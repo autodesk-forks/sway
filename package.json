@@ -1,7 +1,7 @@
 {
-  "name": "sway",
-  "version": "3.0.0-wip",
-  "description": "A library that simplifies OpenAPI integrations.",
+  "name": "autodesk-forks-sway",
+  "version": "2.1.0",
+  "description": "A forked library that simplifies OpenAPI integrations.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -13,19 +13,26 @@
     "openapi",
     "swagger"
   ],
-  "author": {
-    "name": "Jeremy Whitlock",
-    "email": "jwhitlock@apache.org",
-    "url": "https://github.com/whitlockjc"
-  },
+  "maintainers": [
+    {
+      "name": "Jeremy Whitlock",
+      "email": "jwhitlock@apache.org",
+      "url": "https://github.com/whitlockjc"
+    },
+    {
+      "name": "Daniel Golub",
+      "email": "danielg6666@gmail.com",
+      "url": "https://github.com/danielgolub"
+    }
+  ],
   "bugs": {
-    "url": "https://github.com/apigee-127/sway/issues"
+    "url": "https://github.com/autodesk-forks/sway/issues"
   },
-  "homepage": "https://github.com/apigee-127/sway",
+  "homepage": "https://github.com/autodesk-forks/sway",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/apigee-127/sway.git"
+    "url": "git://github.com/autodesk-forks/sway.git"
   },
   "files": [
     "dist",
@@ -40,10 +47,11 @@
     "babel-loader": "^9.1.2",
     "brfs": "^2.0.2",
     "connect": "^3.7.0",
-    "del": "^6.1.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
-    "gulp-eslint": "^6.0.0",
+    "gulp-eslint-new": "^1.7.2",
     "gulp-jsdoc3": "^3.0.0",
     "gulp-load-plugins": "^2.0.8",
     "gulp-replace": "^1.1.4",
@@ -59,7 +67,7 @@
     "node-polyfill-webpack-plugin": "^2.0.1",
     "nyc": "^15.1.0",
     "transform-loader": "^0.2.4",
-    "webpack": "^5.82.0"
+    "webpack": "^5.82.1"
   },
   "dependencies": {
     "debug": "^4.3.4",
@@ -69,7 +77,7 @@
     "json-schema-faker": "^0.5.0-rcv.46",
     "lodash": "^4.17.21",
     "native-promise-only": "^0.8.1",
-    "path-to-regexp": "^1.7.0",
+    "path-to-regexp": "^6.2.1",
     "swagger-methods": "^3.0.2",
     "swagger-schema-official": "^2.0.0-bab6bed",
     "z-schema": "^6.0.1"
