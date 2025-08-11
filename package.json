@@ -51,7 +51,7 @@
     "eslint-plugin-import": "^2.27.5",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
-    "gulp-eslint-new": "^1.7.2",
+    "gulp-eslint-new": "^2.4.0",
     "gulp-jsdoc3": "^3.0.0",
     "gulp-load-plugins": "^2.0.8",
     "gulp-replace": "^1.1.4",
